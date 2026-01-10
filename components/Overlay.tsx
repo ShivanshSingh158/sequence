@@ -17,15 +17,15 @@ export default function Overlay() {
         // 0s: Start with Section 0 ("Crafting...")
         // NOTE: We could set activeIndex(0) here if we wanted to be sure, but state starts at 0.
 
-        // 2.4s: Switch to Section 1 ("Bridge...") (Faster pace)
+        // 1.8s: Switch to Section 1 ("Bridge...") (Faster pace)
         const timer1 = setTimeout(() => {
             setActiveIndex(1);
-        }, 2400);
+        }, 1800);
 
-        // 4.8s: Switch to Section 2 ("ShivansH!!" - Final)
+        // 4.2s: Switch to Section 2 ("ShivansH!!" - Final)
         const timer2 = setTimeout(() => {
             setActiveIndex(2);
-        }, 4800);
+        }, 4200);
 
         return () => {
             clearTimeout(timer1);
