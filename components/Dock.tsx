@@ -61,33 +61,49 @@ function DockIcon({ mouseX, icon: Icon, href }: { mouseX: any, icon: any, href: 
         return val - bounds.x - bounds.width / 2;
     });
 
-    const widthSync = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-    const width = useSpring(widthSync, { mass: 0.1, stiffness: 150, damping: 12 });
+    // Tuned physics for stability ("stay there properly")
+    // Less aggressive growth (width 40 -> 65 instead of 80)
+    // Higher damping to prevent jitter
+    const widthSync = useTransform(distance, [-125, 0, 125], [40, 65, 40]);
+    const width = useSpring(widthSync, { mass: 0.1, stiffness: 120, damping: 20 });
+
+    const handleClick = (e: React.MouseEvent) => {
+        e.preventDefault(); // Take full control
+
+        // Logic for Home (Scroll Top)
+        if (href === '/') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Clean URL
+            window.history.pushState(null, '', '/');
+            return;
+        }
+
+        // Logic for Anchors (#ecosystem, #timeline, #contact)
+        if (href.startsWith('/#')) {
+            const id = href.replace('/#', '');
+            const element = document.getElementById(id);
+            if (element) {
+                // Calculate offset if needed, but smooth scrolling usually lands well.
+                // We add a tiny buffer (-50px) if header overlaps, though we don't have a sticky header.
+                // Default scrollIntoView is safer.
+                element.scrollIntoView({ behavior: 'smooth' });
+                window.history.pushState(null, '', href);
+            }
+        }
+    };
 
     return (
-        <Link href={href} ref={ref} scroll={false} onClick={(e) => {
-            // Manual smooth scroll handling if needed, though Next.js with css smooth scroll usually works.
-            // Adding scroll={false} prevents standard jump, letting CSS handle it if hash exists.
-            // Actually, for hash links, we want to allow standard behavior or handle it via ScrollToTop
-
-            if (href.startsWith('/#')) {
-                const id = href.replace('/#', '');
-                const element = document.getElementById(id);
-                if (element) {
-                    e.preventDefault();
-                    element.scrollIntoView({ behavior: 'smooth' });
-                    // Update URL cleanly via our ScrollToTop logic? 
-                    // Or just let it update and disappear. 
-                    // We'll let ScrollToTop handle the cleanup.
-                    window.history.pushState(null, '', href);
-                }
-            }
-        }}>
+        <Link href={href} ref={ref} scroll={false} onClick={handleClick}>
             <motion.div
                 style={{ width }}
                 className="aspect-square rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/5 cursor-pointer relative group"
             >
                 <Icon className="w-1/2 h-1/2 text-white/80 group-hover:text-white transition-colors" />
+
+                {/* Optional Tooltip for clarity */}
+                <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">
+                    {href === '/' ? 'Home' : href.replace('/#', '').replace(/^\w/, c => c.toUpperCase())}
+                </span>
             </motion.div>
         </Link>
     );

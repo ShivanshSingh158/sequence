@@ -41,7 +41,7 @@ export default function Timeline() {
     const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
     return (
-        <section ref={containerRef} className="relative w-full py-32 bg-[#0a0a0a] overflow-hidden">
+        <section id="timeline" ref={containerRef} className="relative w-full py-32 bg-[#0a0a0a] overflow-hidden">
             <div className="max-w-4xl mx-auto px-6 relative">
 
                 {/* Header */}
