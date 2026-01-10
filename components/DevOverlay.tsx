@@ -68,7 +68,8 @@ const y = useTransform(
                     animate={{ x: 0 }}
                     exit={{ x: '100%' }}
                     transition={{ type: 'spring', damping: 20 }}
-                    className="fixed right-0 top-0 h-screen w-full md:w-[500px] bg-black/95 backdrop-blur-xl border-l border-white/10 z-[10001] overflow-y-auto"
+                    className="fixed right-0 top-0 h-screen w-full md:w-[500px] bg-black/95 backdrop-blur-xl border-l border-white/10 z-[10001] overflow-y-auto pointer-events-auto"
+                    style={{ cursor: 'default' }}
                 >
                     {/* Header */}
                     <div className="sticky top-0 bg-black/90 backdrop-blur-xl border-b border-white/10 p-6 flex items-center justify-between">
@@ -78,7 +79,7 @@ const y = useTransform(
                         </div>
                         <button
                             onClick={toggleDevMode}
-                            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                            className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
                         >
                             <X className="w-6 h-6 text-white" />
                         </button>
