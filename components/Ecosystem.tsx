@@ -4,7 +4,14 @@ import { motion } from 'framer-motion';
 import React from 'react';
 import Image from 'next/image';
 
-const products = [
+interface Product {
+    title: string;
+    desc: string;
+    gradient: string;
+    logo: string;
+}
+
+const products: Product[] = [
     {
         title: "ChargeBrize",
         desc: "Building a low-asset EV charging network. We leverage IoT smart plugs and AI to turn any standard socket into a monetizable charging station.",
@@ -70,7 +77,7 @@ export default function Ecosystem() {
     );
 }
 
-function Flashcard({ product, index }: { product: any, index: number }) {
+function Flashcard({ product, index }: { product: Product, index: number }) {
     return (
         <div className="group h-[420px] w-full [perspective:1000px]">
             <motion.div

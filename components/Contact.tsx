@@ -5,11 +5,17 @@ import { Linkedin } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 
+interface ContactFormData {
+    name: string;
+    email: string;
+    message: string;
+}
+
 export default function Contact() {
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ContactFormData>();
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: ContactFormData) => {
         try {
             const res = await fetch('/api/contact', {
                 method: 'POST',
@@ -22,7 +28,7 @@ export default function Contact() {
             } else {
                 setStatus('error');
             }
-        } catch (error) {
+        } catch {
             setStatus('error');
         }
     };
@@ -36,7 +42,7 @@ export default function Contact() {
                 transition={{ duration: 0.8 }}
                 className="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-8 max-w-5xl leading-[1.1]"
             >
-                Let's Build Something<br />
+                Let&apos;s Build Something<br />
                 That Works.
             </motion.h2>
 
@@ -88,7 +94,7 @@ export default function Contact() {
                     </motion.button>
 
                     {status === 'success' && (
-                        <p className="text-green-400 text-center text-sm">Message sent successfully! I'll get back to you soon.</p>
+                        <p className="text-green-400 text-center text-sm">Message sent successfully! I&apos;ll get back to you soon.</p>
                     )}
                     {status === 'error' && (
                         <p className="text-red-400 text-center text-sm">Something went wrong. Please try again.</p>
