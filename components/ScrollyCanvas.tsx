@@ -12,23 +12,38 @@ export default function ScrollyCanvas() {
     const [frameIndex, setFrameIndex] = useState(0);
 
     // Load images
+    // Load images
     useEffect(() => {
         const loadImages = async () => {
-            const loadedImages: HTMLImageElement[] = [];
-            const imageCount = 120; // Updated frame count
+            const imageCount = 120;
+            const promises: Promise<HTMLImageElement | null>[] = [];
 
             for (let i = 0; i < imageCount; i++) {
-                const img = new Image();
-                const indexStr = i.toString().padStart(3, '0'); // Updated to 3 digits
-                img.src = `/sequence/${indexStr}.png`;
-                await new Promise((resolve) => {
-                    img.onload = resolve;
-                    img.onerror = resolve;
+                const indexStr = i.toString().padStart(3, '0');
+                const src = `/sequence/${indexStr}.png`;
+
+                const promise = new Promise<HTMLImageElement | null>((resolve) => {
+                    const img = new Image();
+                    img.src = src;
+                    img.onload = () => resolve(img);
+                    img.onerror = () => {
+                        console.error(`Failed to load image: ${src}`);
+                        resolve(null);
+                    };
                 });
-                loadedImages.push(img);
+                promises.push(promise);
             }
-            setImages(loadedImages);
-            setIsLoaded(true);
+
+            const results = await Promise.all(promises);
+            const validImages = results.filter((img): img is HTMLImageElement => img !== null);
+
+            if (validImages.length > 0) {
+                setImages(validImages);
+                setIsLoaded(true);
+            } else {
+                console.error("No images loaded successfully");
+                // Optionally handle total failure
+            }
         };
 
         loadImages();
@@ -36,22 +51,22 @@ export default function ScrollyCanvas() {
 
     // Animation Loop
     useEffect(() => {
-        if (!isLoaded || frameIndex >= 119) return;
+        if (!isLoaded || images.length === 0 || frameIndex >= images.length - 1) return;
 
         // Total Duration goal: ~3.8s
         // 120 frames / 3.8s ≈ 31 fps => ~32ms interval
         const interval = setInterval(() => {
             setFrameIndex(prev => {
-                if (prev >= 119) {
+                if (prev >= images.length - 1) {
                     clearInterval(interval);
-                    return 119;
+                    return images.length - 1;
                 }
                 return prev + 1;
             });
         }, 32);
 
         return () => clearInterval(interval);
-    }, [isLoaded, frameIndex]);
+    }, [isLoaded, frameIndex, images.length]);
 
     const renderFrame = useCallback((index: number) => {
         const canvas = canvasRef.current;
