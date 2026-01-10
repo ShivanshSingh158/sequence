@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 
 interface Product {
@@ -78,8 +78,13 @@ export default function Ecosystem() {
 }
 
 function Flashcard({ product, index }: { product: Product, index: number }) {
+    const [isFlipped, setIsFlipped] = useState(false);
+
     return (
-        <div className="group h-[420px] w-full [perspective:1000px]">
+        <div
+            className="group h-[420px] w-full [perspective:1000px] cursor-pointer"
+            onClick={() => setIsFlipped(!isFlipped)}
+        >
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -87,7 +92,7 @@ function Flashcard({ product, index }: { product: Product, index: number }) {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="h-full w-full"
             >
-                <div className="relative h-full w-full transition-all duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                <div className={`relative h-full w-full transition-all duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
 
                     {/* --- FRONT FACE (The Pin) --- */}
                     <div className="absolute inset-0 h-full w-full bg-zinc-900/40 backdrop-blur-sm border border-white/5 rounded-3xl [backface-visibility:hidden] flex flex-col items-center justify-center shadow-xl">
@@ -110,7 +115,7 @@ function Flashcard({ product, index }: { product: Product, index: number }) {
                         </h3>
 
                         <div className="absolute bottom-8 text-white/20 text-xs font-mono uppercase tracking-[0.2em]">
-                            Hover to Reveal
+                            Hover / Click to Reveal
                         </div>
                     </div>
 

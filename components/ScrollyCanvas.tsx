@@ -20,7 +20,7 @@ export default function ScrollyCanvas() {
 
             for (let i = 0; i < imageCount; i++) {
                 const indexStr = i.toString().padStart(3, '0');
-                const src = `/sequence/${indexStr}.png`;
+                const src = `/sequence/${indexStr}.webp`;
 
                 const promise = new Promise<HTMLImageElement | null>((resolve) => {
                     const img = new Image();
