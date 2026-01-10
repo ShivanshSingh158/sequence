@@ -3,12 +3,14 @@
 import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface Product {
     title: string;
     desc: string;
     gradient: string;
     logo: string;
+    slug: string;
 }
 
 const products: Product[] = [
@@ -16,37 +18,43 @@ const products: Product[] = [
         title: "ChargeBrize",
         desc: "Building a low-asset EV charging network. We leverage IoT smart plugs and AI to turn any standard socket into a monetizable charging station.",
         gradient: "from-green-500 to-emerald-700",
-        logo: "/logos/chargebrize.png"
+        logo: "/logos/chargebrize.png",
+        slug: "chargebrize"
     },
     {
         title: "IoT Smart Plugs",
         desc: "Proprietary hardware with built-in Wi-Fi and metering. Enables remote monitoring and seamless payments for any connected device.",
         gradient: "from-emerald-500 to-teal-700",
-        logo: "/logos/iot_smart.png"
+        logo: "/logos/iot_smart.png",
+        slug: "iot-smart-plugs"
     },
     {
         title: "AI Load Balancing",
         desc: "Intelligent grid algorithms that distribute power dynamically, preventing overloads and optimizing energy usage during peak hours.",
         gradient: "from-teal-500 to-cyan-700",
-        logo: "/logos/ai_load.png"
+        logo: "/logos/ai_load.png",
+        slug: "ai-load-balancing"
     },
     {
         title: "RoadSathi",
         desc: "The 'Uber for Mechanics'. Connecting stranded drivers with nearby roadside assistance in real-time.",
         gradient: "from-orange-500 to-amber-700",
-        logo: "/logos/roadsathi.png"
+        logo: "/logos/roadsathi.png",
+        slug: "roadsathi"
     },
     {
         title: "Geospatial Dispatch",
         desc: "Advanced mapping tech that matches requests to the nearest specialist provider, minimizing ETA and maximizing efficiency.",
         gradient: "from-amber-500 to-yellow-700",
-        logo: "/logos/geospatial.png"
+        logo: "/logos/geospatial.png",
+        slug: "geospatial-dispatch"
     },
     {
         title: "Predictive AI Logic",
         desc: "Analyzing vehicle symptoms and data to offer instant diagnostics and proactive SOS alerts before a breakdown occurs.",
         gradient: "from-yellow-500 to-orange-700",
-        logo: "/logos/predictive.png"
+        logo: "/logos/predictive.png",
+        slug: "predictive-ai-logic"
     },
 ];
 
@@ -130,9 +138,9 @@ function Flashcard({ product, index }: { product: Product, index: number }) {
                             {product.desc}
                         </p>
 
-                        <div className="mt-8 px-6 py-2 bg-white/20 backdrop-blur-md rounded-full border border-white/30 text-white text-sm font-bold tracking-wider uppercase">
+                        <Link href={`/tech/${product.slug}`} className="mt-8 px-6 py-2 bg-white/20 backdrop-blur-md rounded-full border border-white/30 text-white text-sm font-bold tracking-wider uppercase hover:bg-white/30 transition-colors">
                             Learn More
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </motion.div>
