@@ -12,7 +12,6 @@ export default function ScrollyCanvas() {
     const [frameIndex, setFrameIndex] = useState(0);
 
     // Load images
-    // Load images
     useEffect(() => {
         const loadImages = async () => {
             const imageCount = 120;
