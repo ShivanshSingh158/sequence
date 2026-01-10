@@ -5,19 +5,16 @@ import { motion, useSpring, useMotionValue } from 'framer-motion';
 
 export default function MagneticCursor() {
     const [isHovering, setIsHovering] = useState(false);
-    const [isMobile, setIsMobile] = useState(true); // Default to mobile-safe (hidden) until mounted
+    const [isMobile, setIsMobile] = useState(true);
 
-    // Smooth mouse coordinates
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
     const springConfig = { damping: 20, stiffness: 400, mass: 0.5 };
-
     const cursorX = useSpring(mouseX, springConfig);
     const cursorY = useSpring(mouseY, springConfig);
 
     useEffect(() => {
-        // Feature detection for touch devices
         const checkMobile = () => {
             const isTouch = window.matchMedia('(pointer: coarse)').matches;
             setIsMobile(isTouch);
@@ -53,40 +50,44 @@ export default function MagneticCursor() {
 
     return (
         <>
-            {/* Logic to hide default cursor globally - ONLY on desktop */}
             <style jsx global>{`
                 @media (pointer: fine) {
                     body {
                         cursor: none;
                     }
+                    /* We override defaults but keep the custom cursor visible */
                     a, button, .cursor-pointer, input, label {
                         cursor: none !important;
                     }
                 }
             `}</style>
 
-            {/* Main Cursor (The Ring) */}
+            {/* Main Ring */}
             <motion.div
                 style={{
                     x: cursorX,
                     y: cursorY,
                 }}
-                className={`fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] rounded-full border transition-all duration-200 ease-out mix-blend-difference will-change-transform
+                className={`fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] rounded-full border transition-all duration-200 ease-out will-change-transform
                     ${isHovering
-                        ? 'scale-[2.5] bg-white border-transparent opacity-80'
-                        : 'scale-100 bg-transparent border-white opacity-100'}
+                        ? 'border-white bg-white/10 scale-150' // Subtle expansion, distinct border
+                        : 'border-white/50 bg-transparent scale-100'}
                 `}
             />
 
-            {/* Center Dot (Always sharp) */}
+            {/* Center Dot - ALWAYS VISIBLE now */}
             <motion.div
                 style={{
                     x: cursorX,
                     y: cursorY,
                 }}
-                className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] flex items-center justify-center mix-blend-difference will-change-transform"
+                className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] flex items-center justify-center will-change-transform"
             >
-                <div className={`w-1.5 h-1.5 bg-white rounded-full transition-opacity duration-200 ${isHovering ? 'opacity-0' : 'opacity-100'}`} />
+                <div
+                    className={`rounded-full bg-white transition-all duration-200
+                        ${isHovering ? 'w-2 h-2' : 'w-1.5 h-1.5'} 
+                    `}
+                />
             </motion.div>
         </>
     );

@@ -2,32 +2,49 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLoading } from '@/context/LoadingContext';
 
 export default function Preloader() {
-    const [isLoading, setIsLoading] = useState(true);
+    // Local visual state for the curtain itself (it needs to exit)
+    const [isLocalLoading, setIsLocalLoading] = useState(true);
     const [counter, setCounter] = useState(0);
+    const { setIsLoading } = useLoading();
 
     useEffect(() => {
         // We simulate a loading duration for the "experience"
-        // In a real heavy app, this could be tied to asset loading progress
         const timer = setInterval(() => {
             setCounter((prev) => {
                 const next = prev + 1;
                 if (next >= 100) {
                     clearInterval(timer);
-                    setTimeout(() => setIsLoading(false), 500); // Small pause at 100%
+                    setTimeout(() => {
+                        setIsLocalLoading(false);
+                        // We delay the global "start" slightly to match the curtain lift
+                    }, 500);
                     return 100;
                 }
                 return next;
             });
-        }, 20); // ~2 seconds total load time (100 * 20ms)
+        }, 20);
 
         return () => clearInterval(timer);
     }, []);
 
+    // Effect to trigger global start ONLY when the curtain exit animation is starting/done
+    useEffect(() => {
+        if (!isLocalLoading) {
+            // Wait for the exit animation (0.8s) to be partially done before starting text
+            // e.g., 0.6s delay
+            const timer = setTimeout(() => {
+                setIsLoading(false);
+            }, 600);
+            return () => clearTimeout(timer);
+        }
+    }, [isLocalLoading, setIsLoading]);
+
     return (
         <AnimatePresence mode="wait">
-            {isLoading && (
+            {isLocalLoading && (
                 <motion.div
                     className="fixed inset-0 z-[10000] bg-black flex items-center justify-center flex-col"
                     initial={{ y: 0 }}

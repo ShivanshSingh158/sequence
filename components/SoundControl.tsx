@@ -16,16 +16,20 @@ const initAudio = () => {
         masterGain = audioCtx.createGain();
         masterGain.connect(audioCtx.destination);
     }
+    // Attempt to resume if suspended (often happens on autoplay)
     if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+        audioCtx.resume().catch(() => {
+            // Expected failure if no user interaction yet
+        });
     }
 };
 
 const playTone = (freq: number, type: 'sine' | 'triangle' | 'square', duration: number, vol: number) => {
     if (!audioCtx || !masterGain) return;
 
+    // Always try to resume context before playing
     if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+        audioCtx.resume().catch(() => { });
     }
 
     const osc = audioCtx.createOscillator();
@@ -95,24 +99,49 @@ export const playStartupSound = () => {
 };
 
 export default function SoundControl() {
-    const [isMuted, setIsMuted] = useState(true);
-    const [hasInteracted, setHasInteracted] = useState(false);
+    // START: Default to UNMUTED so it plays automatically if possible
+    const [isMuted, setIsMuted] = useState(false);
+
+    useEffect(() => {
+        // Try to initialize immediately on mount
+        initAudio();
+
+        // Check if we were blocked
+        if (audioCtx && audioCtx.state === 'suspended') {
+            const unlockAudio = () => {
+                if (audioCtx) {
+                    audioCtx.resume().then(() => {
+                        // Once unlocked, play startup sound
+                        playStartupSound();
+                    });
+                }
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('keydown', unlockAudio);
+            };
+
+            // Listen for ANY first interaction to unlock audio
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('keydown', unlockAudio);
+
+            return () => {
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('keydown', unlockAudio);
+            };
+        } else if (audioCtx && audioCtx.state === 'running') {
+            // If miraculously not blocked (e.g. reused context), play sound
+            playStartupSound();
+        }
+    }, []);
 
     const toggleMute = () => {
         initAudio();
-
         const nextStateIsMuted = !isMuted;
 
-        if (masterGain) {
-            masterGain.gain.setValueAtTime(nextStateIsMuted ? 0 : 1, audioCtx!.currentTime);
+        if (masterGain && audioCtx) {
+            masterGain.gain.setValueAtTime(nextStateIsMuted ? 0 : 1, audioCtx.currentTime);
         }
 
         setIsMuted(nextStateIsMuted);
-
-        if (!nextStateIsMuted && !hasInteracted) {
-            setHasInteracted(true);
-            playStartupSound();
-        }
     };
 
     useEffect(() => {
