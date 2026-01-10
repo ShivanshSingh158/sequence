@@ -51,55 +51,229 @@ textarea,
 
 body.retro-mode {
   font-family: 'Press Start 2P', cursive !important;
-  background: #000 !important;
+  background: #0a0a0a !important;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated grid background */
+body.retro-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(0deg, transparent 24%, rgba(255, 0, 255, 0.05) 25%, rgba(255, 0, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.05) 75%, rgba(0, 255, 255, 0.05) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, rgba(255, 0, 255, 0.05) 25%, rgba(255, 0, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.05) 75%, rgba(0, 255, 255, 0.05) 76%, transparent 77%, transparent);
+  background-size: 50px 50px;
+  animation: gridScroll 20s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* CRT scanlines effect */
+body.retro-mode::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px);
+  pointer-events: none;
+  z-index: 9999;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes gridScroll {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(50px);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
 }
 
 body.retro-mode * {
   font-family: 'Press Start 2P', cursive !important;
-  text-shadow: 2px 2px 0px #ff00ff, -2px -2px 0px #00ffff !important;
+  text-shadow:
+    2px 2px 0px #ff00ff,
+    -2px -2px 0px #00ffff,
+    0 0 10px rgba(255, 0, 255, 0.5) !important;
+  letter-spacing: 2px !important;
 }
 
+/* Enhanced glitch for headings */
 body.retro-mode h1,
 body.retro-mode h2,
 body.retro-mode h3 {
-  animation: glitch 1s infinite;
+  animation: glitchIntense 3s infinite;
+  position: relative;
 }
 
-@keyframes glitch {
+body.retro-mode h1::before,
+body.retro-mode h2::before,
+body.retro-mode h3::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 2px;
+  text-shadow: -2px 0 #ff00ff;
+  top: 0;
+  color: white;
+  overflow: hidden;
+  animation: glitchTop 2s infinite;
+}
+
+body.retro-mode h1::after,
+body.retro-mode h2::after,
+body.retro-mode h3::after {
+  content: attr(data-text);
+  position: absolute;
+  left: -2px;
+  text-shadow: 2px 0 #00ffff;
+  top: 0;
+  color: white;
+  overflow: hidden;
+  animation: glitchBottom 3s infinite;
+}
+
+@keyframes glitchIntense {
 
   0%,
   100% {
     transform: translate(0);
   }
 
-  20% {
-    transform: translate(-2px, 2px);
+  2% {
+    transform: translate(-3px, 3px);
   }
 
-  40% {
-    transform: translate(2px, -2px);
+  4% {
+    transform: translate(3px, -3px);
   }
 
-  60% {
-    transform: translate(-2px, -2px);
+  6% {
+    transform: translate(-3px, -3px);
   }
 
-  80% {
-    transform: translate(2px, 2px);
+  8% {
+    transform: translate(3px, 3px);
+  }
+
+  10% {
+    transform: translate(0);
   }
 }
 
+@keyframes glitchTop {
+
+  0%,
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+
+  20% {
+    clip-path: inset(0 0 80% 0);
+  }
+
+  40% {
+    clip-path: inset(20% 0 60% 0);
+  }
+
+  60% {
+    clip-path: inset(40% 0 40% 0);
+  }
+
+  80% {
+    clip-path: inset(60% 0 20% 0);
+  }
+}
+
+@keyframes glitchBottom {
+
+  0%,
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+
+  25% {
+    clip-path: inset(80% 0 0 0);
+  }
+
+  50% {
+    clip-path: inset(60% 0 20% 0);
+  }
+
+  75% {
+    clip-path: inset(40% 0 40% 0);
+  }
+}
+
+/* Pixelated text effect */
+body.retro-mode p,
+body.retro-mode span {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 8-bit button styles */
 body.retro-mode button,
 body.retro-mode a {
   border: 4px solid #ff00ff !important;
-  box-shadow: 4px 4px 0px #00ffff !important;
+  box-shadow:
+    4px 4px 0px #00ffff,
+    0 0 20px rgba(255, 0, 255, 0.5) !important;
+  background: linear-gradient(135deg, #1a0033 0%, #003333 100%) !important;
+  transition: all 0.1s !important;
 }
 
 body.retro-mode button:hover,
 body.retro-mode a:hover {
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px #00ffff !important;
+  box-shadow:
+    2px 2px 0px #00ffff,
+    0 0 30px rgba(0, 255, 255, 0.8) !important;
+  animation: buttonGlow 0.5s infinite alternate;
+}
+
+@keyframes buttonGlow {
+  0% {
+    filter: brightness(1);
+  }
+
+  100% {
+    filter: brightness(1.2);
+  }
+}
+
+/* Retro mode specific animations */
+body.retro-mode .animate-in {
+  animation: pixelFadeIn 0.5s steps(10) !important;
+}
+
+@keyframes pixelFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
