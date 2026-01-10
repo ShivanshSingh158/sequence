@@ -9,11 +9,9 @@ import Preloader from "@/components/Preloader";
 import Dock from "@/components/Dock";
 import SmoothScroll from "@/components/SmoothScroll";
 import PullToRefresh from "@/components/PullToRefresh";
-import BackgroundBlob from "@/components/BackgroundBlob";
 import MouseTrail from "@/components/MouseTrail";
 import ThemeToggle from "@/components/ThemeToggle";
 import DevModeToggle from "@/components/DevModeToggle";
-import TypingSounds from "@/components/TypingSounds";
 import { LoadingProvider } from "@/context/LoadingContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { DevModeProvider } from "@/context/DevModeContext";
@@ -61,14 +59,12 @@ export default function RootLayout({
         <ThemeProvider>
           <DevModeProvider>
             <LoadingProvider>
-              <BackgroundBlob />
               <MouseTrail />
               <SmoothScroll />
               <PullToRefresh />
               <ScrollToTop />
               <MagneticCursor />
               <SoundControl />
-              <TypingSounds />
               <ThemeToggle />
               <DevModeToggle />
               <GrainOverlay />
