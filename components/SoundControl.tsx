@@ -173,7 +173,7 @@ export default function SoundControl() {
     return (
         <button
             onClick={toggleMute}
-            className={`fixed bottom-8 right-8 z-[100] p-4 backdrop-blur-md border rounded-full transition-all duration-300 group
+            className={`hidden md:block fixed bottom-8 right-8 z-[100] p-4 backdrop-blur-md border rounded-full transition-all duration-300 group
                 ${!isMuted
                     ? 'bg-purple-600 border-purple-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.5)]'
                     : 'bg-white/10 border-white/10 text-white/50 hover:bg-white/20 hover:text-white'}

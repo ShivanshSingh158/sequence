@@ -52,8 +52,8 @@ export default function ScrollyCanvas() {
     useEffect(() => {
         if (!isLoaded || images.length === 0 || frameIndex >= images.length - 1) return;
 
-        // Total Duration goal: ~6.0s (Matches text pace)
-        // 120 frames / 6.0s = 20 fps => 50ms interval
+        // Total Duration goal: ~7.2s (Slower video)
+        // 120 frames / 7.2s = ~16 fps => 60ms interval
         const interval = setInterval(() => {
             setFrameIndex(prev => {
                 if (prev >= images.length - 1) {
