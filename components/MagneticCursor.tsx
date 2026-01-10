@@ -1,35 +1,36 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
 
 export default function MagneticCursor() {
-    const cursorRef = useRef<HTMLDivElement>(null);
     const [isHovering, setIsHovering] = useState(false);
 
     // Smooth mouse coordinates
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
-    // Spring physics for smooth follow delay
-    const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
+    // Optimized Spring Physics
+    // Damping: Higher = less oscillation (smoother stop)
+    // Stiffness: Higher = faster response
+    // Mass: Lower = lighter feel
+    const springConfig = { damping: 20, stiffness: 400, mass: 0.5 };
+
     const cursorX = useSpring(mouseX, springConfig);
     const cursorY = useSpring(mouseY, springConfig);
 
     useEffect(() => {
         const moveCursor = (e: MouseEvent) => {
-            mouseX.set(e.clientX - 16); // Center the 32px cursor
+            // Center the cursor
+            mouseX.set(e.clientX - 16);
             mouseY.set(e.clientY - 16);
         };
 
         const handleMouseOver = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             // Check if hovering over clickable elements
-            if (target.tagName === 'A' || target.tagName === 'BUTTON' || target.closest('a') || target.closest('button') || target.classList.contains('cursor-pointer')) {
-                setIsHovering(true);
-            } else {
-                setIsHovering(false);
-            }
+            const isClickable = target.matches('a, button, input, .cursor-pointer') || target.closest('a, button, .cursor-pointer');
+            setIsHovering(!!isClickable);
         };
 
         window.addEventListener('mousemove', moveCursor);
@@ -48,20 +49,21 @@ export default function MagneticCursor() {
                 body {
                     cursor: none;
                 }
-                a, button, .cursor-pointer {
+                a, button, .cursor-pointer, input, label {
                     cursor: none !important;
                 }
             `}</style>
 
             {/* Main Cursor (The Ring) */}
             <motion.div
-                ref={cursorRef}
                 style={{
                     x: cursorX,
                     y: cursorY,
                 }}
-                className={`fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] rounded-full border border-white transition-all duration-300 ease-out mix-blend-difference
-                    ${isHovering ? 'scale-[2.5] bg-white text-black border-transparent' : 'scale-100 bg-transparent'}
+                className={`fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] rounded-full border transition-all duration-200 ease-out mix-blend-difference will-change-transform
+                    ${isHovering
+                        ? 'scale-[2.5] bg-white border-transparent opacity-80'
+                        : 'scale-100 bg-transparent border-white opacity-100'}
                 `}
             />
 
@@ -71,9 +73,9 @@ export default function MagneticCursor() {
                     x: cursorX,
                     y: cursorY,
                 }}
-                className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] flex items-center justify-center opacity-100 mix-blend-difference"
+                className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] flex items-center justify-center mix-blend-difference will-change-transform"
             >
-                <div className={`w-1 h-1 bg-white rounded-full transition-all duration-300 ${isHovering ? 'opacity-0' : 'opacity-100'}`} />
+                <div className={`w-1.5 h-1.5 bg-white rounded-full transition-opacity duration-200 ${isHovering ? 'opacity-0' : 'opacity-100'}`} />
             </motion.div>
         </>
     );
