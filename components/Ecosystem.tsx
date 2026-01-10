@@ -87,11 +87,21 @@ export default function Ecosystem() {
 
 function Flashcard({ product, index }: { product: Product, index: number }) {
     const [isFlipped, setIsFlipped] = useState(false);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        setMousePosition({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+        });
+    };
 
     return (
         <div
-            className="group h-[420px] w-full [perspective:1000px] cursor-pointer"
+            className="group h-[420px] w-full [perspective:1000px] cursor-pointer relative"
             onClick={() => setIsFlipped(!isFlipped)}
+            onMouseMove={handleMouseMove}
         >
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
@@ -103,7 +113,15 @@ function Flashcard({ product, index }: { product: Product, index: number }) {
                 <div className={`relative h-full w-full transition-all duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
 
                     {/* --- FRONT FACE (The Pin) --- */}
-                    <div className="absolute inset-0 h-full w-full bg-zinc-900/40 backdrop-blur-sm border border-white/5 rounded-3xl [backface-visibility:hidden] flex flex-col items-center justify-center shadow-xl">
+                    <div className="absolute inset-0 h-full w-full bg-zinc-900/40 backdrop-blur-sm border border-white/5 rounded-3xl [backface-visibility:hidden] flex flex-col items-center justify-center shadow-xl overflow-hidden">
+
+                        {/* Spotlight Effect */}
+                        <div
+                            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                            style={{
+                                background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.1), transparent 40%)`
+                            }}
+                        />
 
                         {/* Floating Logo */}
                         <div className="relative w-32 h-32 mb-8 transition-transform duration-500 group-hover:scale-110">

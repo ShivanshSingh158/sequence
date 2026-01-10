@@ -25,7 +25,7 @@ export default function Preloader() {
                 }
                 return next;
             });
-        }, 20);
+        }, 10); // 100 steps * 10ms = 1 second total
 
         return () => clearInterval(timer);
     }, []);
