@@ -91,14 +91,11 @@ export default function Overlay() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
                 transition={{ delay: 0.5, duration: 0.8, type: "spring", bounce: 0.4 }}
-                className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 cursor-pointer pointer-events-auto"
-                onClick={() => {
-                    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                }}
+                className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-auto"
             >
-                <div className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-full hover:bg-white/20 hover:border-white/30 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
-                    <span className="text-white font-medium tracking-wide text-sm">Connect to Me</span>
-                    <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+                    <span className="text-white font-medium tracking-wide text-sm">Scroll Down</span>
+                    <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center animate-bounce">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <polyline points="19 12 12 19 5 12"></polyline>
