@@ -1,0 +1,111 @@
+'use client';
+
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
+
+export default function Overlay() {
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    useEffect(() => {
+        // Sequence Timings based on 3.8s video duration (120 frames * 32ms)
+
+        // 0s: Start with Section 0 ("Crafting...")
+
+        // 1.9s: Switch to Section 1 ("Bridge...")
+        const timer1 = setTimeout(() => {
+            setActiveIndex(1);
+        }, 1900);
+
+        // 3.8s: Switch to Section 2 ("ShivansH!!" - Final)
+        const timer2 = setTimeout(() => {
+            setActiveIndex(2);
+        }, 3800);
+
+        return () => {
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+        };
+    }, []);
+
+    return (
+        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+            <AnimatePresence mode="wait">
+
+                {/* 0s - 1.9s: Crafting (Left Aligned) */}
+                {activeIndex === 0 && (
+                    <motion.div
+                        key="section1"
+                        initial={{ opacity: 0, x: -50, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, x: 50, filter: 'blur(10px)' }}
+                        transition={{ duration: 1, ease: "easeInOut" }}
+                        className="absolute inset-0 flex items-center justify-start p-12 md:p-32"
+                    >
+                        <h2 className="text-5xl md:text-8xl font-bold text-white leading-tight max-w-5xl tracking-tighter">
+                            I build digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">experiences.</span>
+                        </h2>
+                    </motion.div>
+                )}
+
+                {/* 1.9s - 3.8s: Bridge (Right Aligned) */}
+                {activeIndex === 1 && (
+                    <motion.div
+                        key="section2"
+                        initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
+                        transition={{ duration: 1, ease: "easeInOut" }}
+                        className="absolute inset-0 flex items-center justify-end p-12 md:p-32 text-right"
+                    >
+                        <h2 className="text-4xl md:text-7xl font-light text-white mix-blend-difference leading-tight max-w-3xl">
+                            A bridge between <br />
+                            <span className="font-bold">Design</span> & <span className="font-bold">Engineering.</span>
+                        </h2>
+                    </motion.div>
+                )}
+
+                {/* 3.8s+ : ShivansH!! (Center - Final State) */}
+                {activeIndex === 2 && (
+                    <motion.div
+                        key="section3"
+                        initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                        className="absolute inset-0 flex flex-col items-center justify-center text-center"
+                    >
+                        <h1 className="text-6xl md:text-9xl font-bold tracking-tighter text-white mix-blend-difference drop-shadow-2xl">
+                            ShivansH!!
+                        </h1>
+                        <p className="mt-6 text-xl md:text-2xl font-light text-gray-300 tracking-[0.3em] uppercase mix-blend-difference">
+                            Web Developer
+                        </p>
+                    </motion.div>
+                )}
+
+            </AnimatePresence>
+
+            {/* Floating 'Connect to Me' Bar - Always visible */}
+            <motion.div
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                transition={{ delay: 0.5, duration: 0.8, type: "spring", bounce: 0.4 }}
+                className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 cursor-pointer pointer-events-auto"
+                onClick={() => {
+                    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+            >
+                <div className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-full hover:bg-white/20 hover:border-white/30 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+                    <span className="text-white font-medium tracking-wide text-sm">Connect to Me</span>
+                    <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <polyline points="19 12 12 19 5 12"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </motion.div>
+        </div>
+    );
+}
