@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio 2026 - ShivansH
+
+Hey! Welcome to the repo. This is my personal portfolio website, built to showcase my projects (ChargeBrize, RoadSathi, etc.) with a premium, high-performance feel.
+
+The core idea was to make it immersive—that's why you'll see a lot of scroll-linked animations ("scrollytelling") and dynamic interactions.
+
+## Tech Stack
+I built this using the modern React stack:
+-   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+-   **Language**: TypeScript
+-   **Styling**: Tailwind CSS (v4)
+-   **Animations**: Framer Motion
+-   **Canvas**: Native HTML5 Canvas for the image sequence
+-   **Emails**: Nodemailer (server-side sending)
 
 ## Getting Started
 
-First, run the development server:
+If you want to run this locally on your machine, just follow these steps:
 
+### 1. Clone & Install
+Grab the code and install the dependencies.
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/portfolio.git
+cd portfolio
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Set Up Environment Variables
+The contact form needs Gmail credentials to work. Create a `.env.local` file in the root directory:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+EMAIL_USER=your.email@gmail.com
+EMAIL_PASS=your-app-specific-password
+EMAIL_TO=your.email@gmail.com
+```
+*Note: For `EMAIL_PASS`, you can't use your normal password. Go to your Google Account > Security > App Passwords to generate one.*
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Run It
+Start the development server:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) and you're good to go.
 
-## Learn More
+## Project Structure
+Here's a quick map so you don't get lost:
 
-To learn more about Next.js, take a look at the following resources:
+-   `/app`: The main routing logic.
+    -   `page.tsx`: The homepage (where all the sections live).
+    -   `tech/[slug]`: The detailed pages for each project (dynamic routing).
+    -   `api/contact`: The backend endpoint for sending emails.
+-   `/components`: All the UI pieces.
+    -   `ScrollyCanvas.tsx`: The big animation loop on the homepage.
+    -   `Ecosystem.tsx`: The cards section with the "Flip" and "Learn More" logic.
+-   `/public/sequence`: The 120+ optimized WebP frames for the scroll animation.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploying
+I host this on **Vercel**. It's the easiest way. Just push your code, connect the repo on Vercel, and add those same Environment Variables in the project settings.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Feel free to poke around the code! If you see something that could be optimized, let me know.*
