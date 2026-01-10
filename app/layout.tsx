@@ -9,7 +9,14 @@ import Preloader from "@/components/Preloader";
 import Dock from "@/components/Dock";
 import SmoothScroll from "@/components/SmoothScroll";
 import PullToRefresh from "@/components/PullToRefresh";
+import BackgroundBlob from "@/components/BackgroundBlob";
+import MouseTrail from "@/components/MouseTrail";
+import ThemeToggle from "@/components/ThemeToggle";
+import DevModeToggle from "@/components/DevModeToggle";
+import TypingSounds from "@/components/TypingSounds";
 import { LoadingProvider } from "@/context/LoadingContext";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { DevModeProvider } from "@/context/DevModeContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -51,17 +58,26 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <LoadingProvider>
-          <SmoothScroll />
-          <PullToRefresh />
-          <ScrollToTop />
-          <MagneticCursor />
-          <SoundControl />
-          <GrainOverlay />
-          <Preloader />
-          <Dock />
-          {children}
-        </LoadingProvider>
+        <ThemeProvider>
+          <DevModeProvider>
+            <LoadingProvider>
+              <BackgroundBlob />
+              <MouseTrail />
+              <SmoothScroll />
+              <PullToRefresh />
+              <ScrollToTop />
+              <MagneticCursor />
+              <SoundControl />
+              <TypingSounds />
+              <ThemeToggle />
+              <DevModeToggle />
+              <GrainOverlay />
+              <Preloader />
+              <Dock />
+              {children}
+            </LoadingProvider>
+          </DevModeProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

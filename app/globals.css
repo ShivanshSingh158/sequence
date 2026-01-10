@@ -45,3 +45,61 @@ textarea,
 [contenteditable="true"] {
   cursor: text;
 }
+
+/* ========== RETRO MODE STYLES ========== */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body.retro-mode {
+  font-family: 'Press Start 2P', cursive !important;
+  background: #000 !important;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+body.retro-mode * {
+  font-family: 'Press Start 2P', cursive !important;
+  text-shadow: 2px 2px 0px #ff00ff, -2px -2px 0px #00ffff !important;
+}
+
+body.retro-mode h1,
+body.retro-mode h2,
+body.retro-mode h3 {
+  animation: glitch 1s infinite;
+}
+
+@keyframes glitch {
+
+  0%,
+  100% {
+    transform: translate(0);
+  }
+
+  20% {
+    transform: translate(-2px, 2px);
+  }
+
+  40% {
+    transform: translate(2px, -2px);
+  }
+
+  60% {
+    transform: translate(-2px, -2px);
+  }
+
+  80% {
+    transform: translate(2px, 2px);
+  }
+}
+
+body.retro-mode button,
+body.retro-mode a {
+  border: 4px solid #ff00ff !important;
+  box-shadow: 4px 4px 0px #00ffff !important;
+}
+
+body.retro-mode button:hover,
+body.retro-mode a:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #00ffff !important;
+}
