@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "ShivansH!!",
   description: "A high-end personal portfolio featuring scroll-linked animations.",
+  icons: {
+    icon: "/ss_logo.png",
+  },
 };
 
 export default function RootLayout({
