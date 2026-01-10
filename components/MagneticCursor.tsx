@@ -5,52 +5,63 @@ import { motion, useSpring, useMotionValue } from 'framer-motion';
 
 export default function MagneticCursor() {
     const [isHovering, setIsHovering] = useState(false);
+    const [isMobile, setIsMobile] = useState(true); // Default to mobile-safe (hidden) until mounted
 
     // Smooth mouse coordinates
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
-    // Optimized Spring Physics
-    // Damping: Higher = less oscillation (smoother stop)
-    // Stiffness: Higher = faster response
-    // Mass: Lower = lighter feel
     const springConfig = { damping: 20, stiffness: 400, mass: 0.5 };
 
     const cursorX = useSpring(mouseX, springConfig);
     const cursorY = useSpring(mouseY, springConfig);
 
     useEffect(() => {
+        // Feature detection for touch devices
+        const checkMobile = () => {
+            const isTouch = window.matchMedia('(pointer: coarse)').matches;
+            setIsMobile(isTouch);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
         const moveCursor = (e: MouseEvent) => {
-            // Center the cursor
             mouseX.set(e.clientX - 16);
             mouseY.set(e.clientY - 16);
         };
 
         const handleMouseOver = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            // Check if hovering over clickable elements
             const isClickable = target.matches('a, button, input, .cursor-pointer') || target.closest('a, button, .cursor-pointer');
             setIsHovering(!!isClickable);
         };
 
-        window.addEventListener('mousemove', moveCursor);
-        window.addEventListener('mouseover', handleMouseOver);
+        if (!isMobile) {
+            window.addEventListener('mousemove', moveCursor);
+            window.addEventListener('mouseover', handleMouseOver);
+        }
 
         return () => {
+            window.removeEventListener('resize', checkMobile);
             window.removeEventListener('mousemove', moveCursor);
             window.removeEventListener('mouseover', handleMouseOver);
         };
-    }, [mouseX, mouseY]);
+    }, [mouseX, mouseY, isMobile]);
+
+    if (isMobile) return null;
 
     return (
         <>
-            {/* Logic to hide default cursor globally */}
+            {/* Logic to hide default cursor globally - ONLY on desktop */}
             <style jsx global>{`
-                body {
-                    cursor: none;
-                }
-                a, button, .cursor-pointer, input, label {
-                    cursor: none !important;
+                @media (pointer: fine) {
+                    body {
+                        cursor: none;
+                    }
+                    a, button, .cursor-pointer, input, label {
+                        cursor: none !important;
+                    }
                 }
             `}</style>
 

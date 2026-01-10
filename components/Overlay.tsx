@@ -103,6 +103,22 @@ export default function Overlay() {
                     </div>
                 </div>
             </motion.div>
+            {/* Status Indicator - Top Left */}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 1 }}
+                className="fixed top-8 left-8 z-50 flex items-center gap-3 pointer-events-auto"
+            >
+                <div className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-white/90 text-xs font-medium tracking-wide">Available for Freelance</span>
+                    <span className="text-white/40 text-[10px] uppercase tracking-wider">Based in India</span>
+                </div>
+            </motion.div>
         </div>
     );
 }
