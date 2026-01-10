@@ -60,7 +60,7 @@ const products: Product[] = [
 
 export default function Ecosystem() {
     return (
-        <section className="relative w-full py-32 px-6 bg-[#0a0a0a] z-10 overflow-hidden">
+        <section id="ecosystem" className="relative w-full py-32 px-6 bg-[#0a0a0a] z-10 overflow-hidden">
             <div className="max-w-7xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, x: -50 }}
