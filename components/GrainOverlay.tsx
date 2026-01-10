@@ -1,5 +1,5 @@
 'use client';
-// Production deployment - All premium features active
+// Production deployment - All premium + advanced features active
 
 export default function GrainOverlay() {
     return (

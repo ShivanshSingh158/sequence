@@ -8,6 +8,7 @@ import GrainOverlay from "@/components/GrainOverlay";
 import Preloader from "@/components/Preloader";
 import Dock from "@/components/Dock";
 import SmoothScroll from "@/components/SmoothScroll";
+import PullToRefresh from "@/components/PullToRefresh";
 import { LoadingProvider } from "@/context/LoadingContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -52,6 +53,7 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <LoadingProvider>
           <SmoothScroll />
+          <PullToRefresh />
           <ScrollToTop />
           <MagneticCursor />
           <SoundControl />

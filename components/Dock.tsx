@@ -2,14 +2,17 @@
 
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { Home, Layers, Clock, Mail } from 'lucide-react';
 import Link from 'next/link';
+import AnimatedHome from '@/components/icons/AnimatedHome';
+import AnimatedLayers from '@/components/icons/AnimatedLayers';
+import AnimatedClock from '@/components/icons/AnimatedClock';
+import AnimatedMail from '@/components/icons/AnimatedMail';
 
 const items = [
-    { id: 'home', icon: Home, label: 'Home', href: '/' },
-    { id: 'ecosystem', icon: Layers, label: 'Work', href: '/#ecosystem' },
-    { id: 'timeline', icon: Clock, label: 'Journey', href: '/#timeline' },
-    { id: 'contact', icon: Mail, label: 'Contact', href: '/#contact' },
+    { id: 'home', icon: AnimatedHome, label: 'Home', href: '/' },
+    { id: 'ecosystem', icon: AnimatedLayers, label: 'Work', href: '/#ecosystem' },
+    { id: 'timeline', icon: AnimatedClock, label: 'Journey', href: '/#timeline' },
+    { id: 'contact', icon: AnimatedMail, label: 'Contact', href: '/#contact' },
 ];
 
 export default function Dock() {
