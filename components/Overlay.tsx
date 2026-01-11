@@ -13,7 +13,7 @@ export default function Overlay({ forceFinalState = false }: { forceFinalState?:
         if (isLoading || forceFinalState) return;
 
         // 0s: Start
-        // setActiveIndex(0); // Already 0 by default
+        setActiveIndex(0);
 
         // 1.1s: Bridge
         // 0.6s: Bridge (Accelerated by 0.5s)
@@ -63,7 +63,7 @@ export default function Overlay({ forceFinalState = false }: { forceFinalState?:
                         transition={{ duration: 1, ease: "easeInOut" }}
                         className="absolute inset-0 flex items-center justify-end p-12 md:p-32 text-right"
                     >
-                        <h2 className="text-4xl md:text-7xl font-light text-white leading-tight max-w-3xl">
+                        <h2 className="text-4xl md:text-7xl font-light text-white mix-blend-difference leading-tight max-w-3xl">
                             A bridge between <br />
                             <span className="font-bold">Design</span> & <span className="font-bold">Engineering.</span>
                         </h2>
@@ -80,10 +80,10 @@ export default function Overlay({ forceFinalState = false }: { forceFinalState?:
                         transition={{ duration: 1.2, ease: "easeInOut" }}
                         className="absolute inset-0 flex flex-col items-center justify-center text-center"
                     >
-                        <h1 className="text-6xl md:text-9xl font-bold tracking-tighter text-white drop-shadow-2xl">
+                        <h1 className="text-6xl md:text-9xl font-bold tracking-tighter text-white mix-blend-difference drop-shadow-2xl">
                             ShivansH!!
                         </h1>
-                        <p className="mt-6 text-xl md:text-2xl font-light text-gray-300 tracking-[0.3em] uppercase">
+                        <p className="mt-6 text-xl md:text-2xl font-light text-gray-300 tracking-[0.3em] uppercase mix-blend-difference">
                             Web Developer
                         </p>
                     </motion.div>

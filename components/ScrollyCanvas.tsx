@@ -170,7 +170,7 @@ export default function ScrollyCanvas() {
                     style={{ width: '100%', height: '100%' }}
                 />
 
-                <Overlay forceFinalState={false} />
+                <Overlay forceFinalState={hasPlayedSession} />
 
                 {!isLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black z-50">

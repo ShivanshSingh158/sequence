@@ -2,6 +2,8 @@
 
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
+import Link from 'next/link'; // Kept for type safety if needed, or remove. 
+// Actually let's remove it properly.
 
 import AnimatedHome from '@/components/icons/AnimatedHome';
 import AnimatedLayers from '@/components/icons/AnimatedLayers';

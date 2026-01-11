@@ -50,24 +50,6 @@ export default function PullToRefresh() {
         };
     }, [pullDistance, startY]);
 
-    const [confettiItems, setConfettiItems] = useState<{ left: string, delay: string, duration: string, char: string }[]>([]);
-
-    useEffect(() => {
-        if (showConfetti) {
-            const items = Array.from({ length: 50 }).map(() => ({
-                left: `${Math.random() * 100}%`,
-                delay: `${Math.random() * 0.5}s`,
-                duration: `${1 + Math.random() * 2}s`,
-                char: ['🎉', '✨', '🎊', '⭐', '💫'][Math.floor(Math.random() * 5)]
-            }));
-            setConfettiItems(items);
-        } else {
-            setConfettiItems([]);
-        }
-    }, [showConfetti]);
-
-    // ... (touch logic remains same)
-
     return (
         <>
             {/* Pull indicator */}
@@ -86,18 +68,18 @@ export default function PullToRefresh() {
             {/* Confetti effect */}
             {showConfetti && (
                 <div className="fixed inset-0 z-[9999] pointer-events-none">
-                    {confettiItems.map((item, i) => (
+                    {[...Array(50)].map((_, i) => (
                         <div
                             key={i}
                             className="absolute text-2xl animate-bounce"
                             style={{
-                                left: item.left,
+                                left: `${Math.random() * 100}%`,
                                 top: '-50px',
-                                animation: `fall ${item.duration} linear forwards`,
-                                animationDelay: item.delay
+                                animation: `fall ${1 + Math.random() * 2}s linear forwards`,
+                                animationDelay: `${Math.random() * 0.5}s`
                             }}
                         >
-                            {item.char}
+                            {['🎉', '✨', '🎊', '⭐', '💫'][Math.floor(Math.random() * 5)]}
                         </div>
                     ))}
                 </div>
