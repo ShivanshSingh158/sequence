@@ -1,135 +1,101 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useTransform } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useLoading } from '@/context/LoadingContext';
 
-export default function Overlay({ forceFinalState = false }: { forceFinalState?: boolean }) {
+export default function Overlay({ progress }: { progress: any, forceFinalState?: boolean }) {
     const { isLoading } = useLoading();
-    // If forced, start at 2 (Final), else 0
-    const [activeIndex, setActiveIndex] = useState(forceFinalState ? 2 : 0);
 
-    useEffect(() => {
-        if (isLoading || forceFinalState) return;
+    // Text 1: "I build digital experiences" (0% - 30%)
+    const opacity1 = useTransform(progress, [0, 0.05, 0.25, 0.3], [0, 1, 1, 0]);
+    const y1 = useTransform(progress, [0, 0.3], [20, 0]);
+    const filter1 = useTransform(progress, [0, 0.05, 0.25, 0.3], ['blur(10px)', 'blur(0px)', 'blur(0px)', 'blur(10px)']);
+    const scale1 = useTransform(progress, [0, 0.3], [0.9, 1]);
 
-        // 0s: Start
-        setActiveIndex(0);
+    // Text 2: "A bridge between..." (35% - 65%)
+    const opacity2 = useTransform(progress, [0.35, 0.4, 0.6, 0.65], [0, 1, 1, 0]);
+    const scale2 = useTransform(progress, [0.35, 0.65], [0.9, 1.05]);
+    const filter2 = useTransform(progress, [0.35, 0.4, 0.6, 0.65], ['blur(10px)', 'blur(0px)', 'blur(0px)', 'blur(10px)']);
 
-        // 1.1s: Bridge
-        // 0.6s: Bridge (Accelerated by 0.5s)
-        const timer1 = setTimeout(() => setActiveIndex(1), 600);
+    // Text 3: "ShivansH!!" (70% - 100%)
+    const opacity3 = useTransform(progress, [0.7, 0.8, 1], [0, 1, 1]);
+    const y3 = useTransform(progress, [0.7, 1], [30, 0]);
+    const filter3 = useTransform(progress, [0.7, 0.8], ['blur(10px)', 'blur(0px)']);
 
-        // 2.6s: ShivansH (Accelerated by 0.5s)
-        const timer2 = setTimeout(() => setActiveIndex(2), 2600);
-
-        return () => {
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-        };
-    }, [isLoading, forceFinalState]);
+    if (isLoading) return null;
 
     return (
         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-            <AnimatePresence mode="wait">
 
-                {/* Don't show anything (except maybe static placeholder) until loading is done? 
-                    Actually, we assume ScrollyCanvas fade-in handles visibility, 
-                    but here we prevent the Text Animation logic from racing ahead. 
-                */}
+            {/* Text 1: Crafting */}
+            <motion.div
+                style={{ opacity: opacity1, y: y1, filter: filter1, scale: scale1 }}
+                className="absolute inset-0 flex items-center justify-start p-12 md:p-32"
+            >
+                <h2 className="text-5xl md:text-8xl font-bold text-white leading-tight max-w-5xl tracking-tighter">
+                    I build digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">experiences.</span>
+                </h2>
+            </motion.div>
 
-                {/* 0s - 1.9s: Crafting (Left Aligned) */}
-                {!isLoading && activeIndex === 0 && (
-                    <motion.div
-                        key="section1"
-                        initial={{ opacity: 0, x: -50, filter: 'blur(10px)' }}
-                        animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, x: 50, filter: 'blur(10px)' }}
-                        transition={{ duration: 1, ease: "easeInOut" }}
-                        className="absolute inset-0 flex items-center justify-start p-12 md:p-32"
-                    >
-                        <h2 className="text-5xl md:text-8xl font-bold text-white leading-tight max-w-5xl tracking-tighter">
-                            I build digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">experiences.</span>
-                        </h2>
-                    </motion.div>
-                )}
+            {/* Text 2: Bridge */}
+            <motion.div
+                style={{ opacity: opacity2, scale: scale2, filter: filter2 }}
+                className="absolute inset-0 flex items-center justify-end p-12 md:p-32 text-right"
+            >
+                <h2 className="text-4xl md:text-7xl font-light text-white mix-blend-difference leading-tight max-w-3xl">
+                    A bridge between <br />
+                    <span className="font-bold">Design</span> & <span className="font-bold">Engineering.</span>
+                </h2>
+            </motion.div>
 
-                {/* 1.9s - 3.8s: Bridge (Right Aligned) */}
-                {!isLoading && activeIndex === 1 && (
-                    <motion.div
-                        key="section2"
-                        initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
-                        animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
-                        transition={{ duration: 1, ease: "easeInOut" }}
-                        className="absolute inset-0 flex items-center justify-end p-12 md:p-32 text-right"
-                    >
-                        <h2 className="text-4xl md:text-7xl font-light text-white mix-blend-difference leading-tight max-w-3xl">
-                            A bridge between <br />
-                            <span className="font-bold">Design</span> & <span className="font-bold">Engineering.</span>
-                        </h2>
-                    </motion.div>
-                )}
-
-                {/* 3.8s+ : ShivansH!! (Center - Final State) */}
-                {!isLoading && activeIndex === 2 && (
-                    <motion.div
-                        key="section3"
-                        initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
-                        transition={{ duration: 1.2, ease: "easeInOut" }}
-                        className="absolute inset-0 flex flex-col items-center justify-center text-center"
-                    >
-                        <h1 className="text-6xl md:text-9xl font-bold tracking-tighter text-white mix-blend-difference drop-shadow-2xl">
-                            ShivansH!!
-                        </h1>
-                        <p className="mt-6 text-xl md:text-2xl font-light text-gray-300 tracking-[0.3em] uppercase mix-blend-difference">
-                            Web Developer
-                        </p>
-                    </motion.div>
-                )}
-
-            </AnimatePresence>
+            {/* Text 3: Identity */}
+            <motion.div
+                style={{ opacity: opacity3, y: y3, filter: filter3 }}
+                className="absolute inset-0 flex flex-col items-center justify-center text-center"
+            >
+                <h1 className="text-6xl md:text-9xl font-bold tracking-tighter text-white mix-blend-difference drop-shadow-2xl">
+                    ShivansH!!
+                </h1>
+                <p className="mt-6 text-xl md:text-2xl font-light text-gray-300 tracking-[0.3em] uppercase mix-blend-difference">
+                    Web Developer
+                </p>
+            </motion.div>
 
             {/* Floating 'Connect to Me' Bar - Always visible */}
-            {!isLoading && (
-                <motion.div
-                    initial={{ y: 100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 100, opacity: 0 }}
-                    transition={{ delay: 0.5, duration: 0.8, type: "spring", bounce: 0.4 }}
-                    className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-auto"
-                >
-                    <div className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
-                        <span className="text-white font-medium tracking-wide text-sm">Scroll Down</span>
-                        <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center animate-bounce">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <polyline points="19 12 12 19 5 12"></polyline>
-                            </svg>
-                        </div>
+            <motion.div
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8, type: "spring", bounce: 0.4 }}
+                className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-auto"
+            >
+                <div className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+                    <span className="text-white font-medium tracking-wide text-sm">Scroll Down</span>
+                    <div className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center animate-bounce">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <polyline points="19 12 12 19 5 12"></polyline>
+                        </svg>
                     </div>
-                </motion.div>
-            )}
+                </div>
+            </motion.div>
 
             {/* Status Indicator - Top Left */}
-            {!isLoading && (
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1, duration: 1 }}
-                    className="fixed top-8 left-8 z-50 flex items-center gap-3 pointer-events-auto"
-                >
-                    <div className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-white/90 text-xs font-medium tracking-wide">Available for Freelance</span>
-                        <span className="text-white/40 text-[10px] uppercase tracking-wider">Based in India</span>
-                    </div>
-                </motion.div>
-            )}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 1 }}
+                className="fixed top-8 left-8 z-50 flex items-center gap-3 pointer-events-auto"
+            >
+                <div className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-white/90 text-xs font-medium tracking-wide">Available for Freelance</span>
+                    <span className="text-white/40 text-[10px] uppercase tracking-wider">Based in India</span>
+                </div>
+            </motion.div>
         </div>
     );
 }

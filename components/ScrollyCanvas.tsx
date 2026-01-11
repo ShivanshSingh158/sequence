@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useMotionValue } from 'framer-motion';
 import Overlay from './Overlay';
 
 // Global flag to track if animation has played in this session
@@ -77,6 +77,9 @@ export default function ScrollyCanvas() {
     // Target duration: ~5.1s (was 4.5s) for 120 frames (120 / 5.1 ≈ 23.5 FPS)
     const fpsInterval = 1000 / 23.5;
 
+    // Progress MotionValue for sync
+    const progress = useMotionValue(0);
+
     // Draw Frame
     const renderFrame = useCallback((index: number) => {
         const canvas = canvasRef.current;
@@ -84,6 +87,9 @@ export default function ScrollyCanvas() {
         const img = images[index];
 
         if (!canvas || !ctx || !img) return;
+
+        // Update MotionValue
+        progress.set(index / (images.length - 1));
 
         const width = canvas.width / (window.devicePixelRatio || 1);
         const height = canvas.height / (window.devicePixelRatio || 1);
@@ -94,7 +100,7 @@ export default function ScrollyCanvas() {
 
         ctx.clearRect(0, 0, width, height);
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-    }, [images]);
+    }, [images, progress]);
 
     // Time-based Animation Loop
     const animate = useCallback((time: number) => {
@@ -108,6 +114,7 @@ export default function ScrollyCanvas() {
             } else {
                 // Animation Finished
                 hasPlayedSession = true;
+                progress.set(1); // Ensure it hits 100%
             }
             lastTimeRef.current = time - (delta % fpsInterval);
         }
@@ -115,7 +122,7 @@ export default function ScrollyCanvas() {
         if (frameIndexRef.current < images.length - 1) {
             requestRef.current = requestAnimationFrame(animate);
         }
-    }, [images.length, fpsInterval, renderFrame]);
+    }, [images.length, fpsInterval, renderFrame, progress]);
 
     // Viewport Detection
     const isInView = useInView(containerRef, { amount: 0.1 }); // Trigger when 10% visible
@@ -144,6 +151,7 @@ export default function ScrollyCanvas() {
             // Reset to 0
             frameIndexRef.current = 0;
             lastTimeRef.current = performance.now();
+            progress.set(0);
 
             // Start Loop
             requestRef.current = requestAnimationFrame(animate);
@@ -156,7 +164,7 @@ export default function ScrollyCanvas() {
             window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(requestRef.current);
         };
-    }, [isLoaded, images, setupCanvas, animate, renderFrame, isInView]);
+    }, [isLoaded, images, setupCanvas, animate, renderFrame, isInView, progress]);
 
     return (
         <div ref={containerRef} className="h-screen relative bg-[#121212]">
@@ -170,7 +178,7 @@ export default function ScrollyCanvas() {
                     style={{ width: '100%', height: '100%' }}
                 />
 
-                <Overlay forceFinalState={hasPlayedSession} />
+                <Overlay forceFinalState={hasPlayedSession} progress={progress} />
 
                 {!isLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black z-50">
