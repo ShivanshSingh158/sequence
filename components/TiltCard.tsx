@@ -46,7 +46,7 @@ export default function TiltCard({ children, className = "", onClick }: { childr
             onClick={onClick}
             className={`perspective-1000 ${className}`}
         >
-            <div style={{ transform: "translateZ(50px)" }}>
+            <div style={{ transform: "translateZ(50px)" }} className="h-full w-full">
                 {children}
             </div>
         </motion.div>

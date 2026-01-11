@@ -24,12 +24,12 @@ export default function TypewriterText({
 
     useEffect(() => {
         if (isInView) {
-            let currentIndex = 0;
+            let currentLength = 0;
             const timeout = setTimeout(() => {
                 const interval = setInterval(() => {
-                    if (currentIndex < text.length) {
-                        setDisplayedText(prev => prev + text[currentIndex]);
-                        currentIndex++;
+                    if (currentLength <= text.length) {
+                        setDisplayedText(text.slice(0, currentLength));
+                        currentLength++;
                     } else {
                         clearInterval(interval);
                     }
