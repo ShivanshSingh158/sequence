@@ -26,7 +26,7 @@ export default function GlitchLoader() {
             return;
         }
 
-        const duration = 2000;
+        const duration = 1200; // Faster (1.2s)
         const interval = 20;
         const steps = duration / interval;
         const inc = 100 / steps;
