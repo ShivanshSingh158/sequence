@@ -9,7 +9,12 @@ export default function ScrollyCanvas() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [images, setImages] = useState<HTMLImageElement[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [frameIndex, setFrameIndex] = useState(0);
+
+    // Animation State
+    const frameIndexRef = useRef(0);
+    const requestRef = useRef<number>(0);
+    const lastTimeRef = useRef<number>(0);
+    const fpsInterval = 1000 / 30; // Target 30fps for cinematic feel (or 60 for smooth)
 
     // Load images
     useEffect(() => {
@@ -26,7 +31,7 @@ export default function ScrollyCanvas() {
                     img.src = src;
                     img.onload = () => resolve(img);
                     img.onerror = () => {
-                        console.error(`Failed to load image: ${src}`);
+                        // console.error(`Failed to load: ${src}`); // Suppress noise
                         resolve(null);
                     };
                 });
@@ -39,89 +44,116 @@ export default function ScrollyCanvas() {
             if (validImages.length > 0) {
                 setImages(validImages);
                 setIsLoaded(true);
-            } else {
-                console.error("No images loaded successfully");
-                // Optionally handle total failure
             }
         };
 
         loadImages();
     }, []);
 
-    // Animation Loop
-    useEffect(() => {
-        if (!isLoaded || images.length === 0 || frameIndex >= images.length - 1) return;
+    // Setup Canvas Resolution (High DPI)
+    const setupCanvas = useCallback(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
 
-        // Total Duration goal: ~7.2s (Slower video)
-        // 120 frames / 7.2s = ~16 fps => 60ms interval
-        const interval = setInterval(() => {
-            setFrameIndex(prev => {
-                if (prev >= images.length - 1) {
-                    clearInterval(interval);
-                    return images.length - 1;
-                }
-                return prev + 1;
-            });
-        }, 50);
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
 
-        return () => clearInterval(interval);
-    }, [isLoaded, frameIndex, images.length]);
+        // Set actual size in memory (scaled to account for extra pixel density)
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
 
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            // Normalize coordinate system to use css pixels
+            ctx.scale(dpr, dpr);
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+        }
+    }, []);
+
+    // Draw Frame
     const renderFrame = useCallback((index: number) => {
         const canvas = canvasRef.current;
-        const context = canvas?.getContext('2d');
+        const ctx = canvas?.getContext('2d');
         const img = images[index];
 
-        if (!canvas || !context || !img) return;
+        if (!canvas || !ctx || !img) return;
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // Note: canvas.width/height are now physically scaled by DPR
+        // But since we used ctx.scale(dpr, dpr), we draw using logical CSS pixels
+        // However, we need to know the logical size again
+        const width = canvas.width / (window.devicePixelRatio || 1);
+        const height = canvas.height / (window.devicePixelRatio || 1);
 
-        // Object-fit: cover logic
-        const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-        const x = (canvas.width / 2) - (img.width / 2) * scale;
-        const y = (canvas.height / 2) - (img.height / 2) * scale;
+        // Object-fit: Cover Logic
+        const scale = Math.max(width / img.width, height / img.height);
+        const x = (width / 2) - (img.width / 2) * scale;
+        const y = (height / 2) - (img.height / 2) * scale;
 
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(img, x, y, img.width * scale, img.height * scale);
+        ctx.clearRect(0, 0, width, height);
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
     }, [images]);
 
-    // Render loop
-    useEffect(() => {
-        if (isLoaded) {
-            requestAnimationFrame(() => renderFrame(frameIndex));
-        }
-    }, [frameIndex, isLoaded, renderFrame]);
+    // Animation Loop
+    const animate = useCallback((time: number) => {
+        if (!lastTimeRef.current) lastTimeRef.current = time;
+        const delta = time - lastTimeRef.current;
 
-    // Handle resize
-    useEffect(() => {
-        const handleResize = () => {
-            if (isLoaded) {
-                renderFrame(frameIndex);
+        if (delta > fpsInterval) {
+            // Update frame
+            if (frameIndexRef.current < images.length - 1) {
+                frameIndexRef.current += 1;
+                renderFrame(frameIndexRef.current);
             }
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [isLoaded, frameIndex, renderFrame]);
+            lastTimeRef.current = time - (delta % fpsInterval);
+        }
 
-    // Restart when scrolling back to top (viewport re-entry)
+        requestRef.current = requestAnimationFrame(animate);
+    }, [images.length, fpsInterval, renderFrame]);
+
+    // Init & Events
+    useEffect(() => {
+        if (!isLoaded || images.length === 0) return;
+
+        setupCanvas();
+        window.addEventListener('resize', setupCanvas);
+
+        // Start Animation
+        lastTimeRef.current = performance.now();
+        requestRef.current = requestAnimationFrame(animate);
+
+        return () => {
+            window.removeEventListener('resize', setupCanvas);
+            cancelAnimationFrame(requestRef.current);
+        };
+    }, [isLoaded, images, setupCanvas, animate]);
+
+    // Handle Scroll Reset / Replay
     const onViewportEnter = () => {
-        setFrameIndex(0);
+        frameIndexRef.current = 0;
+        lastTimeRef.current = performance.now();
     };
 
     return (
         <div ref={containerRef} className="h-screen relative bg-[#121212]">
+            {/* Sticky container for smooth pinning */}
             <motion.div
                 className="sticky top-0 h-screen w-full overflow-hidden"
                 onViewportEnter={onViewportEnter}
             >
-                <canvas ref={canvasRef} className="block w-full h-full object-cover" />
+                <canvas
+                    ref={canvasRef}
+                    className="block w-full h-full object-cover"
+                    style={{ width: '100%', height: '100%' }} // Ensure CSS size is explicit
+                />
 
                 <Overlay />
 
                 {!isLoaded && (
-                    <div className="absolute inset-0 flex items-center justify-center text-white/30 text-lg md:text-xl font-light tracking-[0.3em] uppercase animate-pulse">
-                        World is LOADING
+                    <div className="absolute inset-0 flex items-center justify-center bg-black z-50">
+                        <div className="text-white/30 text-lg md:text-xl font-light tracking-[0.3em] uppercase animate-pulse">
+                            Decreasing Entropy
+                        </div>
                     </div>
                 )}
 
