@@ -41,8 +41,7 @@ export default function Contact() {
 
     return (
         <section
-            className="sticky bottom-0 w-full h-screen py-32 px-6 bg-black flex flex-col items-center justify-center text-center z-0"
-            style={{ minHeight: '100vh' }}
+            className="w-full h-full py-32 px-6 bg-black flex flex-col items-center justify-center text-center"
         >
             {/* Visual Separator Line at top of footer */}
             <div className="absolute top-0 left-0 w-full h-px bg-white/10" />
@@ -142,10 +141,10 @@ export default function Contact() {
                     rel="noopener noreferrer"
                     className="flex flex-col items-center gap-3 group"
                 >
-                    <Linkedin className="w-12 h-12 text-white/50 group-hover:text-blue-400 transition-all duration-300" />
                     <span className="text-sm font-mono text-white/30 tracking-[0.3em] uppercase group-hover:text-white transition-colors">
                         Connect on LinkedIn
                     </span>
+                    <Linkedin className="w-12 h-12 text-white/50 group-hover:text-blue-400 transition-all duration-300" />
                 </a>
             </motion.div>
         </section >

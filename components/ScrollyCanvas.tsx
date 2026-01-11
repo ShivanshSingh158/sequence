@@ -74,8 +74,8 @@ export default function ScrollyCanvas() {
     const frameIndexRef = useRef(0);
     const requestRef = useRef<number>(0);
     const lastTimeRef = useRef<number>(0);
-    // Target duration: ~4.5s for 120 frames (120 / 4.5 ≈ 26.66 FPS)
-    const fpsInterval = 1000 / 26.5;
+    // Target duration: ~5.1s (was 4.5s) for 120 frames (120 / 5.1 ≈ 23.5 FPS)
+    const fpsInterval = 1000 / 23.5;
 
     // Draw Frame
     const renderFrame = useCallback((index: number) => {

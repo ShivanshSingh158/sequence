@@ -12,15 +12,19 @@ export default function Home() {
       {/* Netlify Deployment Trigger */}
       <ScrollyCanvas />
       <AgencyIntro />
-      <SkillsConstellation />
+      <div id="skills">
+        <SkillsConstellation />
+      </div>
       <Ecosystem />
       <Timeline />
       <Process />
 
-      {/* Spacer for Sticky Footer Reveal */}
-      <div className="relative z-10 w-full bg-[#121212] h-[100vh]" style={{ pointerEvents: 'none' }}></div>
+      <div className="relative z-10 w-full" style={{ marginBottom: '100vh', backgroundColor: '#121212' }}>
+        {/* Last Content Block (just empty div to ensure bg covers footer) */}
+        <div className="h-24 bg-[#121212]" />
+      </div>
 
-      <div id="contact" className="relative z-0">
+      <div id="contact" className="fixed bottom-0 left-0 w-full h-screen z-0">
         <Contact />
       </div>
     </main>

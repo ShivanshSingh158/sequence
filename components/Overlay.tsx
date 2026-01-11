@@ -16,10 +16,11 @@ export default function Overlay({ forceFinalState = false }: { forceFinalState?:
         setActiveIndex(0);
 
         // 1.1s: Bridge
-        const timer1 = setTimeout(() => setActiveIndex(1), 1100);
+        // 0.6s: Bridge (Accelerated by 0.5s)
+        const timer1 = setTimeout(() => setActiveIndex(1), 600);
 
-        // 3.1s: ShivansH
-        const timer2 = setTimeout(() => setActiveIndex(2), 3100);
+        // 2.6s: ShivansH (Accelerated by 0.5s)
+        const timer2 = setTimeout(() => setActiveIndex(2), 2600);
 
         return () => {
             clearTimeout(timer1);
