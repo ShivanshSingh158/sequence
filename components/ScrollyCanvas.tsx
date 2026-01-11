@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Overlay from './Overlay';
 
 // Global flag to track if animation has played in this session
@@ -117,28 +117,46 @@ export default function ScrollyCanvas() {
         }
     }, [images.length, fpsInterval, renderFrame]);
 
-    // Start Animation & Handle Resize
+    // Viewport Detection
+    const isInView = useInView(containerRef, { amount: 0.1 }); // Trigger when 10% visible
+    const hasStartedRef = useRef(false);
+
+    // Start Animation & Handle Replay on Viewport Entry
     useEffect(() => {
         if (!isLoaded || images.length === 0) return;
 
         setupCanvas();
 
-        // Handle Resize - Repaint current frame
         const handleResize = () => {
             setupCanvas();
             renderFrame(frameIndexRef.current);
         };
         window.addEventListener('resize', handleResize);
 
-        // Allways Play Animation (Visuals Replay)
-        lastTimeRef.current = performance.now();
-        requestRef.current = requestAnimationFrame(animate);
+        // Logic: If in view and animation finished (or stopped), restart it
+        // We only restart if we are NOT currently animating (or if we want to force restart)
+        // User wants "autoplay from starting properly" when "scrolling up again".
+
+        if (isInView) {
+            // Cancel any existing loop to be safe
+            if (requestRef.current) cancelAnimationFrame(requestRef.current);
+
+            // Reset to 0
+            frameIndexRef.current = 0;
+            lastTimeRef.current = performance.now();
+
+            // Start Loop
+            requestRef.current = requestAnimationFrame(animate);
+        } else {
+            // Optional: specific logic when leaving view?
+            // For now, let it run to completion or stop.
+        }
 
         return () => {
             window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(requestRef.current);
         };
-    }, [isLoaded, images, setupCanvas, animate, renderFrame]);
+    }, [isLoaded, images, setupCanvas, animate, renderFrame, isInView]);
 
     return (
         <div ref={containerRef} className="h-screen relative bg-[#121212]">

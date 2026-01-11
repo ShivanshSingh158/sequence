@@ -16,7 +16,11 @@ export default function Home() {
       <Ecosystem />
       <Timeline />
       <Process />
-      <div id="contact">
+
+      {/* Spacer for Sticky Footer Reveal */}
+      <div className="relative z-10 w-full bg-[#121212] h-[100vh]" style={{ pointerEvents: 'none' }}></div>
+
+      <div id="contact" className="relative z-0">
         <Contact />
       </div>
     </main>

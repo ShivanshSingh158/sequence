@@ -11,23 +11,24 @@ export default function Preloader() {
     const { setIsLoading } = useLoading();
 
     useEffect(() => {
-        // We simulate a loading duration for the "experience"
-        const timer = setInterval(() => {
+        // Chaotic Counter Logic
+        const interval = setInterval(() => {
             setCounter((prev) => {
-                const next = prev + 1;
-                if (next >= 100) {
-                    clearInterval(timer);
+                if (prev >= 100) {
+                    clearInterval(interval);
                     setTimeout(() => {
                         setIsLocalLoading(false);
-                        // We delay the global "start" slightly to match the curtain lift
                     }, 500);
                     return 100;
                 }
-                return next;
-            });
-        }, 10); // 100 steps * 10ms = 1 second total
 
-        return () => clearInterval(timer);
+                // Jump by random amount (Chaotic feel)
+                const jump = Math.floor(Math.random() * 5) + 1;
+                return Math.min(prev + jump, 100);
+            });
+        }, 50); // Faster updates
+
+        return () => clearInterval(interval);
     }, []);
 
     // Effect to trigger global start ONLY when the curtain exit animation is starting/done

@@ -150,14 +150,16 @@ export default function SoundControl() {
         const handleMouseEnter = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             if (target.matches('a, button, input, .cursor-pointer') || target.closest('a, button, .cursor-pointer')) {
-                playHoverSound();
+                // Short, crisp high-pitch tick
+                playTone(800, 'sine', 0.03, 0.05);
             }
         };
 
         const handleClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             if (target.matches('a, button, input, .cursor-pointer') || target.closest('a, button, .cursor-pointer')) {
-                playClickSound();
+                // Deavier low-pitch thud
+                playTone(200, 'triangle', 0.05, 0.1);
             }
         };
 

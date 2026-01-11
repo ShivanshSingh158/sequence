@@ -9,6 +9,7 @@ interface ContactFormData {
     name: string;
     email: string;
     message: string;
+    phone: string;
 }
 
 export default function Contact() {
@@ -16,25 +17,35 @@ export default function Contact() {
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
     const onSubmit = async (data: ContactFormData) => {
+        // Optimistic UI: Show success immediately to the user
+        setStatus('success');
+        reset();
+
+        // Send request in background (fire and forget from UI perspective, but we catch errors)
         try {
-            const res = await fetch('/api/contact', {
+            fetch('/api/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
+            }).then(res => {
+                if (!res.ok) {
+                    console.error("Background send failed");
+                    setStatus('error');
+                }
             });
-            if (res.ok) {
-                setStatus('success');
-                reset();
-            } else {
-                setStatus('error');
-            }
-        } catch {
+        } catch (e) {
+            console.error("Network error", e);
             setStatus('error');
         }
     };
 
     return (
-        <section className="relative w-full py-32 px-6 bg-black flex flex-col items-center justify-center text-center z-10">
+        <section
+            className="sticky bottom-0 w-full h-screen py-32 px-6 bg-black flex flex-col items-center justify-center text-center z-0"
+            style={{ minHeight: '100vh' }}
+        >
+            {/* Visual Separator Line at top of footer */}
+            <div className="absolute top-0 left-0 w-full h-px bg-white/10" />
             <motion.h2
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -74,6 +85,15 @@ export default function Contact() {
                     </div>
 
                     <div>
+                        <input
+                            {...register("phone")}
+                            placeholder="Your Phone Number (Optional)"
+                            type="tel"
+                            className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white placeholder:text-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                        />
+                    </div>
+
+                    <div>
                         <textarea
                             {...register("message", { required: true })}
                             placeholder="Tell me about your project..."
@@ -88,13 +108,20 @@ export default function Contact() {
                         whileTap={{ scale: 0.98 }}
                         disabled={isSubmitting}
                         type="submit"
-                        className="w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
-                        {isSubmitting ? 'Sending...' : 'Send Message'}
+                        {/* Dynamic Button Text */}
+                        {status === 'success' ? 'Message Sent 🚀' : isSubmitting ? 'Sending...' : 'Send Message'}
                     </motion.button>
 
                     {status === 'success' && (
-                        <p className="text-green-400 text-center text-sm">Message sent successfully! I&apos;ll get back to you soon.</p>
+                        <motion.p
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-green-400 text-center text-sm"
+                        >
+                            Message sent successfully! Check your email for a confirmation.
+                        </motion.p>
                     )}
                     {status === 'error' && (
                         <p className="text-red-400 text-center text-sm">Something went wrong. Please try again.</p>

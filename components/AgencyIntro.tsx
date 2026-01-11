@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
-import TypewriterText from './TypewriterText';
+import DecryptText from './DecryptText';
 
 export default function AgencyIntro() {
     const ref = useRef(null);
@@ -61,7 +61,7 @@ export default function AgencyIntro() {
                 style={{ y: headlineY }}
                 className="max-w-7xl text-6xl md:text-8xl font-bold text-white tracking-tight mb-10 leading-[1.1]"
             >
-                <TypewriterText text="Building" className="inline-block" delay={0.5} /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-green-200 to-emerald-600 drop-shadow-[0_0_20px_rgba(34,197,94,0.6)]">Low-Asset Charging Infrastructure</span> <br />
+                <DecryptText text="Building" className="inline-block" /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-green-200 to-emerald-600 drop-shadow-[0_0_20px_rgba(34,197,94,0.6)]">Low-Asset Charging Infrastructure</span> <br />
                 Across All of India.
             </motion.h2>
 

@@ -68,7 +68,7 @@ export default function MagneticCursor() {
                     x: cursorX,
                     y: cursorY,
                 }}
-                className={`fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] rounded-full border transition-all duration-200 ease-out will-change-transform
+                className={`fixed top-0 left-0 w-8 h-8 pointer-events-none z-[11000] rounded-full border transition-all duration-200 ease-out will-change-transform
                     ${isHovering
                         ? 'border-white bg-white/10 scale-150' // Subtle expansion, distinct border
                         : 'border-white/50 bg-transparent scale-100'}
@@ -81,7 +81,7 @@ export default function MagneticCursor() {
                     x: cursorX,
                     y: cursorY,
                 }}
-                className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] flex items-center justify-center will-change-transform"
+                className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[11000] flex items-center justify-center will-change-transform"
             >
                 <div
                     className={`rounded-full bg-white transition-all duration-200
