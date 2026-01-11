@@ -80,7 +80,7 @@ ${message}
     
     <p style="margin-bottom: 0;"><strong>Shivansh Singh</strong></p>
     <p style="color: #666; font-size: 0.9em; margin-top: 5px;">Founder @ ChargeBrize | Co-Founder @ RoadSathi<br>
-    <a href="https://shivanshsingh11.netlify.app" style="color: #2563ea; text-decoration: none;">View Portfolio</a></p>
+    <a href="https://shivansh-portfolio-nine.vercel.app/" style="color: #2563ea; text-decoration: none;">View Portfolio</a></p>
 </div>
             `,
         };
