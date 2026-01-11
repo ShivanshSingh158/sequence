@@ -6,10 +6,12 @@ import CircuitGrid from "@/components/CircuitGrid";
 import Timeline from "@/components/Timeline";
 import Process from "@/components/Process";
 import Contact from "@/components/Contact";
+import VoltageBootLoader from "@/components/VoltageBootLoader";
 
 export default function Home() {
   return (
     <main className="w-full">
+      <VoltageBootLoader />
       {/* Netlify Deployment Trigger */}
       <ScrollyCanvas />
       <AgencyIntro />
