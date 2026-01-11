@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import Overlay from './Overlay';
 
 export default function ScrollyCanvas() {
@@ -11,13 +11,7 @@ export default function ScrollyCanvas() {
     const [isLoaded, setIsLoaded] = useState(false);
 
     // Scroll Logic
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
-    });
 
-    // Smooth scroll progress to avoid jittery frames
-    const smoothProgress = useSpring(scrollYProgress, { stiffness: 200, damping: 20, mass: 0.5 });
 
     // Load images
     useEffect(() => {
@@ -73,6 +67,12 @@ export default function ScrollyCanvas() {
         }
     }, []);
 
+    // Animation State
+    const frameIndexRef = useRef(0);
+    const requestRef = useRef<number>(0);
+    const lastTimeRef = useRef<number>(0);
+    const fpsInterval = 1000 / 30; // 30fps locked
+
     // Draw Frame
     const renderFrame = useCallback((index: number) => {
         const canvas = canvasRef.current;
@@ -81,13 +81,9 @@ export default function ScrollyCanvas() {
 
         if (!canvas || !ctx || !img) return;
 
-        // Note: canvas.width/height are now physically scaled by DPR
-        // But since we used ctx.scale(dpr, dpr), we draw using logical CSS pixels
-        // However, we need to know the logical size again
         const width = canvas.width / (window.devicePixelRatio || 1);
         const height = canvas.height / (window.devicePixelRatio || 1);
 
-        // Object-fit: Cover Logic
         const scale = Math.max(width / img.width, height / img.height);
         const x = (width / 2) - (img.width / 2) * scale;
         const y = (height / 2) - (img.height / 2) * scale;
@@ -96,41 +92,39 @@ export default function ScrollyCanvas() {
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
     }, [images]);
 
-    // Scroll Loop
+    // Time-based Animation Loop
+    const animate = useCallback((time: number) => {
+        if (!lastTimeRef.current) lastTimeRef.current = time;
+        const delta = time - lastTimeRef.current;
+
+        if (delta > fpsInterval) {
+            if (frameIndexRef.current < images.length - 1) {
+                frameIndexRef.current += 1;
+                renderFrame(frameIndexRef.current);
+            }
+            lastTimeRef.current = time - (delta % fpsInterval);
+        }
+
+        if (frameIndexRef.current < images.length - 1) {
+            requestRef.current = requestAnimationFrame(animate);
+        }
+    }, [images.length, fpsInterval, renderFrame]);
+
+    // Start Animation on Load
     useEffect(() => {
         if (!isLoaded || images.length === 0) return;
 
         setupCanvas();
-        const handleResize = () => {
-            setupCanvas();
-            // Re-render current frame on resize
-            const currentProg = smoothProgress.get();
-            const frameIndex = Math.min(
-                Math.floor(currentProg * (images.length - 1)),
-                images.length - 1
-            );
-            renderFrame(frameIndex);
-        };
+        window.addEventListener('resize', setupCanvas);
 
-        window.addEventListener('resize', handleResize);
-
-        // Subscribe to spring changes
-        const unsubscribe = smoothProgress.on("change", (latest) => {
-            const frameIndex = Math.min(
-                Math.floor(latest * (images.length - 1)),
-                images.length - 1
-            );
-            requestAnimationFrame(() => renderFrame(frameIndex));
-        });
-
-        // Initial render
-        renderFrame(0);
+        lastTimeRef.current = performance.now();
+        requestRef.current = requestAnimationFrame(animate);
 
         return () => {
-            window.removeEventListener('resize', handleResize);
-            unsubscribe();
+            window.removeEventListener('resize', setupCanvas);
+            cancelAnimationFrame(requestRef.current);
         };
-    }, [isLoaded, images, setupCanvas, renderFrame, smoothProgress]);
+    }, [isLoaded, images, setupCanvas, animate]);
 
     return (
         <div ref={containerRef} className="h-[400vh] relative bg-[#121212]">
@@ -144,7 +138,7 @@ export default function ScrollyCanvas() {
                     style={{ width: '100%', height: '100%' }}
                 />
 
-                <Overlay scrollProgress={smoothProgress} />
+                <Overlay />
 
                 {!isLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black z-50">

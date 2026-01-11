@@ -1,22 +1,30 @@
 'use client';
 
-import { motion, AnimatePresence, MotionValue, useMotionValueEvent } from 'framer-motion';
-import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { useLoading } from '@/context/LoadingContext';
 
-export default function Overlay({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
+export default function Overlay() {
     const { isLoading } = useLoading();
     const [activeIndex, setActiveIndex] = useState(0);
 
-    useMotionValueEvent(scrollProgress, "change", (latest) => {
-        if (latest < 0.35) {
-            setActiveIndex(0);
-        } else if (latest >= 0.35 && latest < 0.75) {
-            setActiveIndex(1);
-        } else {
-            setActiveIndex(2);
-        }
-    });
+    useEffect(() => {
+        if (isLoading) return;
+
+        // 0s: Start
+        setActiveIndex(0);
+
+        // 1.5s: Bridge
+        const timer1 = setTimeout(() => setActiveIndex(1), 1500);
+
+        // 3.5s: ShivansH (Final - Syncs with Frame 105/120)
+        const timer2 = setTimeout(() => setActiveIndex(2), 3500);
+
+        return () => {
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+        };
+    }, [isLoading]);
 
     return (
         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
