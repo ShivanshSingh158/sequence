@@ -46,20 +46,41 @@ ${message}
             to: email,
             subject: `Thank you for connecting - Shivansh Singh`,
             html: `
-<div style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a; max-width: 600px; line-height: 1.6;">
+<div style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a; max-width: 600px; line-height: 1.6; border: 1px solid #eaeaea; padding: 20px; border-radius: 8px;">
     <p>Dear ${name.split(' ')[0]},</p>
     
-    <p>Thank you for reaching out. I have received your message and appreciate your interest.</p>
+    <p>Thank you for reaching out. I have received your message and will review it shortly. Here is a brief introduction to my work while you wait:</p>
     
-    <p><strong>A bit about me:</strong><br>
-    I am the Founder of <strong>ChargeBrize</strong> and Co-Founder of <strong>RoadSathi</strong>. My work focuses on building scalable, low-asset infrastructure and creating seamless digital experiences that solve real-world problems.</p>
+    <hr style="border: 0; border-top: 1px solid #f0f0f0; margin: 20px 0;">
+
+    <h3 style="color: #2563ea; margin-bottom: 10px;">About Me</h3>
+    <p style="margin-top: 0;">I am a Full-Stack Developer and Founder specializing in building scalable, high-performance web applications. I turn complex problems into seamless, user-centric digital experiences through code and design.</p>
     
-    <p>I will review your inquiry regarding <em>"${message.substring(0, 30)}${message.length > 30 ? '...' : ''}"</em> and get back to you as soon as possible.</p>
+    <h3 style="color: #2563ea; margin-bottom: 10px;">My Technical Arsenal</h3>
+    <ul style="list-style-type: none; padding: 0;">
+        <li style="margin-bottom: 8px;"><strong>Core Stack:</strong> Next.js 15, React, TypeScript, Node.js</li>
+        <li style="margin-bottom: 8px;"><strong>Styling & UI:</strong> Tailwind CSS, Framer Motion, GSAP, HTML Canvas</li>
+        <li style="margin-bottom: 8px;"><strong>Backend & Cloud:</strong> PostgreSQL, Prisma, AWS, Google Cloud, Docker</li>
+        <li style="margin-bottom: 8px;"><strong>Tools:</strong> Git, Figma, Vercel/Netlify CI/CD</li>
+    </ul>
+
+    <h3 style="color: #2563ea; margin-bottom: 10px;">What I Can Offer You</h3>
+    <ul style="padding-left: 20px;">
+        <li style="margin-bottom: 5px;"><strong>End-to-End Development:</strong> From concept to deployment, I handle the full lifecycle.</li>
+        <li style="margin-bottom: 5px;"><strong>Performance Optimization:</strong> Lightning-fast load times and SEO-ready architecture.</li>
+        <li style="margin-bottom: 5px;"><strong>Interactive Experiences:</strong> Premium, Awwwards-level animations and user interfaces.</li>
+        <li style="margin-bottom: 5px;"><strong>Scalable Infrastructure:</strong> Robust backend systems built for growth.</li>
+    </ul>
+
+    <hr style="border: 0; border-top: 1px solid #f0f0f0; margin: 20px 0;">
+    
+    <p>I look forward to potentially collaborating with you.</p>
     
     <p>Best regards,</p>
     
-    <p><strong>Shivansh Singh</strong><br>
-    <span style="color: #666; font-size: 0.9em;">Founder @ ChargeBrize | Web Developer</span></p>
+    <p style="margin-bottom: 0;"><strong>Shivansh Singh</strong></p>
+    <p style="color: #666; font-size: 0.9em; margin-top: 5px;">Founder @ ChargeBrize | Co-Founder @ RoadSathi<br>
+    <a href="https://shivanshsingh11.netlify.app" style="color: #2563ea; text-decoration: none;">View Portfolio</a></p>
 </div>
             `,
         };
