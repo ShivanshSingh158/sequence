@@ -2,6 +2,7 @@ import ScrollyCanvas from "@/components/ScrollyCanvas";
 import AgencyIntro from "@/components/AgencyIntro";
 import SkillsConstellation from "@/components/SkillsConstellation";
 import Ecosystem from "@/components/Ecosystem";
+import CircuitGrid from "@/components/CircuitGrid";
 import Timeline from "@/components/Timeline";
 import Process from "@/components/Process";
 import Contact from "@/components/Contact";
@@ -16,6 +17,7 @@ export default function Home() {
         <SkillsConstellation />
       </div>
       <Ecosystem />
+      <CircuitGrid />
       <Timeline />
       <Process />
 
