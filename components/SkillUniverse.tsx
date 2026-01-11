@@ -1,37 +1,38 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Atom, Database, Server, Component, Globe, Cpu, Layers, Zap, Code, Layout, GitBranch, MessageSquare, Radio, Workflow } from 'lucide-react';
+import { Database, Server, Cpu, Layers, Zap, Workflow, MessageSquare, X } from 'lucide-react';
+import { ReactIcon, NextIcon, TailwindIcon, JsIcon, TsIcon, NodeIcon, HtmlIcon, CssIcon, MongoIcon } from './SkillIcons';
 import StarNode from './StarNode';
 import { useState, useEffect } from 'react';
 
 // Skill Data
 const SKILLS = [
     // Frontend
-    { id: 1, label: 'HTML/CSS', icon: Layout, category: 'Frontend', x: 20, y: 30, color: '#E44D26' },
-    { id: 12, label: 'React', icon: Component, category: 'Frontend', x: 35, y: 40, color: '#61DAFB' },
-    { id: 13, label: 'Tailwind', icon: Layers, category: 'Frontend', x: 25, y: 55, color: '#38B2AC' },
-    { id: 14, label: 'NextJS', icon: Zap, category: 'Frontend', x: 40, y: 25, color: '#ffffff' },
+    { id: 1, label: 'HTML', icon: HtmlIcon, category: 'Frontend', x: 15, y: 30, color: '#E44D26' },
+    { id: 16, label: 'CSS', icon: CssIcon, category: 'Frontend', x: 25, y: 25, color: '#264DE4' },
+    { id: 12, label: 'React', icon: ReactIcon, category: 'Frontend', x: 35, y: 40, color: '#61DAFB' },
+    { id: 13, label: 'Tailwind', icon: TailwindIcon, category: 'Frontend', x: 25, y: 55, color: '#38B2AC' },
+    { id: 14, label: 'NextJS', icon: NextIcon, category: 'Frontend', x: 45, y: 25, color: '#ffffff' },
 
     // Core JS
-    { id: 2, label: 'JS Basics', icon: Code, category: 'Core', x: 50, y: 50, color: '#F7DF1E' },
-    { id: 3, label: 'Architecture', icon: Cpu, category: 'Core', x: 60, y: 40, color: '#F7DF1E' },
-    { id: 4, label: 'Async JS', icon: Radio, category: 'Core', x: 55, y: 65, color: '#F7DF1E' },
-    { id: 9, label: 'TypeScript', icon: Code, category: 'Core', x: 70, y: 55, color: '#3178C6' },
+    { id: 2, label: 'JS Core', icon: JsIcon, category: 'Core', x: 55, y: 50, color: '#F7DF1E' },
+    { id: 3, label: 'Architecture', icon: Cpu, category: 'Core', x: 65, y: 40, color: '#A855F7' },
+    { id: 9, label: 'TypeScript', icon: TsIcon, category: 'Core', x: 70, y: 60, color: '#3178C6' },
 
     // Backend & Runtime
-    { id: 5, label: 'Node vs Browser', icon: Globe, category: 'Backend', x: 80, y: 30, color: '#339933' },
-    { id: 6, label: 'HTTP/Express', icon: Server, category: 'Backend', x: 75, y: 20, color: '#000000' },
-    { id: 11, label: 'BunJS', icon: Zap, category: 'Backend', x: 85, y: 40, color: '#fbf0df' },
+    { id: 5, label: 'NodeJS', icon: NodeIcon, category: 'Backend', x: 80, y: 30, color: '#339933' },
+    { id: 6, label: 'Express', icon: Server, category: 'Backend', x: 75, y: 20, color: '#ffffff' },
+    { id: 11, label: 'Bun', icon: Zap, category: 'Backend', x: 88, y: 45, color: '#fbf0df' },
 
     // Data
-    { id: 7, label: 'DB & Mongo', icon: Database, category: 'Data', x: 25, y: 75, color: '#47A248' },
-    { id: 8, label: 'Postgres/Prisma', icon: Database, category: 'Data', x: 35, y: 85, color: '#336791' },
+    { id: 7, label: 'MongoDB', icon: MongoIcon, category: 'Data', x: 25, y: 75, color: '#47A248' },
+    { id: 8, label: 'Postgres', icon: Database, category: 'Data', x: 35, y: 85, color: '#336791' },
 
     // Advanced
     { id: 10, label: 'Turborepo', icon: Workflow, category: 'Advanced', x: 65, y: 80, color: '#EF4444' },
     { id: 15, label: 'WebSockets', icon: MessageSquare, category: 'Advanced', x: 50, y: 85, color: '#ffffff' },
-    { id: 16, label: 'Queues', icon: GitBranch, category: 'Advanced', x: 80, y: 70, color: '#FF6B6B' },
+    { id: 17, label: 'Redis', icon: Layers, category: 'Advanced', x: 80, y: 70, color: '#FF4438' },
 ];
 
 const THEMES = {
@@ -84,12 +85,18 @@ export default function SkillUniverse({
                     <div className="relative z-20 flex justify-between items-center p-6 md:p-8 backdrop-blur-md border-b border-white/10">
                         <div>
                             <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">Skill Universe</h2>
-                            <div className="flex gap-2 text-xs md:text-sm">
+                            <div className="flex gap-2 text-xs md:text-sm flex-wrap">
                                 {categories.map(cat => (
                                     <button
                                         key={cat}
                                         onClick={() => setFilter(cat)}
-                                        className={`px-3 py-1 rounded-full border transition-all ${filter === cat ? 'bg-white text-black border-white' : 'text-white/50 border-white/10 hover:border-white/40'}`}
+                                        className={`
+                                            px-4 py-1.5 rounded-full border transition-all duration-300 cursor-pointer
+                                            ${filter === cat
+                                                ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.4)] scale-105 font-bold'
+                                                : 'text-white/60 border-white/10 hover:border-white/50 hover:text-white hover:bg-white/5'
+                                            }
+                                        `}
                                     >
                                         {cat}
                                     </button>
@@ -97,27 +104,33 @@ export default function SkillUniverse({
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-6">
                             {/* Theme Switcher */}
-                            <div className="hidden md:flex gap-2">
+                            <div className="hidden md:flex gap-3">
                                 {(Object.keys(THEMES) as Array<keyof typeof THEMES>).map(theme => (
                                     <button
                                         key={theme}
                                         onClick={() => setActiveTheme(theme)}
-                                        className={`w-6 h-6 rounded-full border border-white/20 ${activeTheme === theme ? 'ring-2 ring-white scale-110' : 'opacity-50'}`}
+                                        className={`
+                                            w-8 h-8 rounded-full border transition-all duration-300 cursor-pointer relative group
+                                            ${activeTheme === theme ? 'ring-2 ring-white scale-110 shadow-lg' : 'opacity-60 hover:opacity-100 hover:scale-110 border-white/30'}
+                                        `}
                                         style={{
                                             background: theme === 'cosmic' ? '#050505' : theme === 'cyberpunk' ? '#0a0a1a' : '#121212'
                                         }}
-                                        title={theme}
-                                    />
+                                        title={theme.charAt(0).toUpperCase() + theme.slice(1)}
+                                    >
+                                        {/* Hover Glow */}
+                                        <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </button>
                                 ))}
                             </div>
 
                             <button
                                 onClick={onClose}
-                                className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                                className="p-3 rounded-full hover:bg-white/10 transition-all duration-300 cursor-pointer hover:rotate-90 active:scale-95 group"
                             >
-                                <X className="text-white w-8 h-8" />
+                                <X className="text-white w-8 h-8 group-hover:text-red-400 transition-colors" />
                             </button>
                         </div>
                     </div>
@@ -153,16 +166,18 @@ export default function SkillUniverse({
                         </svg>
 
                         {/* Stars */}
-                        {filteredSkills.map((skill, index) => (
-                            <StarNode
-                                key={skill.id}
-                                {...skill}
-                                isActive={selectedSkill?.id === skill.id}
-                                onClick={() => setSelectedSkill(skill)}
-                                delay={index * 0.05}
-                                icon={skill.icon as any} // Cast safely
-                            />
-                        ))}
+                        <AnimatePresence>
+                            {filteredSkills.map((skill, index) => (
+                                <StarNode
+                                    key={skill.id}
+                                    {...skill}
+                                    isActive={selectedSkill?.id === skill.id}
+                                    onClick={() => setSelectedSkill(skill)}
+                                    delay={index * 0.05}
+                                    icon={skill.icon as any} // Cast safely
+                                />
+                            ))}
+                        </AnimatePresence>
 
                         {/* Skill Detail Card (Floating) */}
                         <AnimatePresence>

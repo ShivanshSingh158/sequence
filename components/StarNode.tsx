@@ -1,13 +1,17 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useSpring } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
+import { useRef } from 'react';
+
+// Mouse hook helper (simplified)
+const useMouse = () => ({ x: 0, y: 0 }); // Placeholder if not using global context yet
 
 interface StarNodeProps {
     x: number;
     y: number;
     size?: number;
-    icon: LucideIcon;
+    icon: any;
     label: string;
     isActive?: boolean;
     color?: string;
@@ -26,51 +30,89 @@ export default function StarNode({
     onClick,
     delay = 0
 }: StarNodeProps) {
+    const ref = useRef<HTMLDivElement>(null);
+    const { x: mouseX, y: mouseY } = useMouse();
+
+    // Magnetic Effect Logic
+    // We need to calculate distance from this node to mouse to apply force
+    // Since we don't have global mouse context easily, we'll use a local hover-based magnet for now
+    // Or simpler: High-end "float" + standard parallax
+
+    // Simple Floating Animation
+    const yOffset = useSpring(0, { stiffness: 100, damping: 10 });
+    const xOffset = useSpring(0, { stiffness: 100, damping: 10 });
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        const rect = ref.current?.getBoundingClientRect();
+        if (rect) {
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const flowX = (e.clientX - centerX) * 0.5; // Magnetic pull strength
+            const flowY = (e.clientY - centerY) * 0.5;
+            xOffset.set(flowX);
+            yOffset.set(flowY);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        xOffset.set(0);
+        yOffset.set(0);
+    };
+
     return (
         <motion.div
-            className="absolute flex flex-col items-center justify-center cursor-pointer z-10 group"
+            ref={ref}
+            className="absolute flex flex-col items-center justify-center cursor-none z-10 group"
             style={{
                 left: `${x}%`,
                 top: `${y}%`,
-                transform: 'translate(-50%, -50%)'
+                x: xOffset,
+                y: yOffset,
+                transform: 'translate(-50%, -50%)' // Base centering
             }}
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0, transition: { duration: 0.3 } }}
             transition={{ delay, duration: 0.5, type: 'spring' }}
             onClick={onClick}
-            whileHover={{ scale: 1.2, zIndex: 20 }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            whileHover={{ scale: 1.4, zIndex: 50 }}
             whileTap={{ scale: 0.9 }}
         >
-            {/* Glow Effect */}
-            <motion.div
-                className="absolute inset-0 rounded-full blur-md"
-                style={{ backgroundColor: color }}
-                animate={{
-                    opacity: [0.3, 0.6, 0.3],
-                    scale: [1, 1.2, 1]
-                }}
-                transition={{
-                    duration: 2 + Math.random() * 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                }}
-            />
+            {/* Holographic Orb - Glass Effect */}
+            <div className="relative">
+                {/* Core Glow */}
+                <motion.div
+                    className="absolute inset-0 rounded-full blur-xl opacity-40 transition-opacity duration-500 group-hover:opacity-80"
+                    style={{ backgroundColor: color }}
+                />
 
-            {/* Icon Container */}
-            <div
-                className={`relative flex items-center justify-center rounded-full border transition-colors duration-300 ${isActive ? 'bg-white/20 border-white' : 'bg-black/40 border-white/20 group-hover:border-white/60'}`}
-                style={{
-                    width: size,
-                    height: size,
-                    borderColor: isActive ? color : undefined
-                }}
-            >
-                <Icon size={size * 0.5} color={isActive ? color : '#ffffff'} />
+                {/* Glass Container */}
+                <div
+                    className={`relative flex items-center justify-center rounded-full backdrop-blur-md border border-white/20 shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] transition-all duration-300 ${isActive ? 'bg-white/10 ring-2 ring-white/50' : 'bg-white/5 group-hover:bg-white/10'}`}
+                    style={{
+                        width: size,
+                        height: size,
+                        boxShadow: `0 0 20px -5px ${color}80` // Dynamic colored shadow
+                    }}
+                >
+                    {/* Inner Reflection (Gloss) */}
+                    <div className="absolute top-1 left-1/2 -translate-x-1/2 w-1/2 h-1/3 bg-gradient-to-b from-white/40 to-transparent rounded-full opacity-60" />
+
+                    {/* Icon - Support both Lucide & Custom SVG */}
+                    {typeof Icon === 'function' ? (
+                        <Icon className={`w-1/2 h-1/2 transition-transform duration-300 group-hover:scale-110`} style={{ color: isActive ? '#fff' : color }} />
+                    ) : (
+                        // Fallback for straight SVG elements if passed differently
+                        <Icon size={size * 0.5} color={isActive ? color : '#ffffff'} />
+                    )}
+                </div>
             </div>
 
             {/* Label */}
             <motion.span
-                className={`mt-2 text-[10px] md:text-xs font-mono tracking-wider px-2 py-0.5 rounded-full backdrop-blur-sm transition-colors ${isActive ? 'bg-white/10 text-white' : 'text-white/40 group-hover:text-white'}`}
+                className={`mt-3 text-[10px] md:text-xs font-mono tracking-wider px-3 py-1 rounded-full backdrop-blur-md border border-white/10 transition-colors ${isActive ? 'bg-white/20 text-white border-white/40' : 'bg-black/40 text-white/50 group-hover:text-white'}`}
                 style={{ color: isActive ? color : undefined }}
             >
                 {label}
