@@ -6,12 +6,12 @@ import CircuitGrid from "@/components/CircuitGrid";
 import Timeline from "@/components/Timeline";
 import Philosophy from "@/components/Philosophy"; // Renamed from Process
 import Contact from "@/components/Contact";
-import CinematicLoader from "@/components/CinematicLoader";
+import GlitchLoader from "@/components/GlitchLoader";
 
 export default function Home() {
   return (
     <main className="w-full">
-      <CinematicLoader />
+      <GlitchLoader />
       {/* Netlify Deployment Trigger */}
       <ScrollyCanvas />
       <AgencyIntro />
