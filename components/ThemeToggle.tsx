@@ -10,7 +10,7 @@ export default function ThemeToggle() {
     return (
         <motion.button
             onClick={toggleRetro}
-            className="fixed top-8 right-24 z-[100] p-3 backdrop-blur-md border rounded-full transition-all duration-300 group"
+            className="fixed top-4 right-4 md:top-8 md:right-24 z-[100] p-2 md:p-3 backdrop-blur-md border rounded-full transition-all duration-300 group"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             style={{

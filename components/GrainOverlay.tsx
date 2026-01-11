@@ -3,7 +3,7 @@
 
 export default function GrainOverlay() {
     return (
-        <div className="fixed inset-0 pointer-events-none z-[9998] mix-blend-overlay opacity-20">
+        <div className="fixed inset-0 pointer-events-none z-[9998] mix-blend-overlay opacity-20 hidden md:block">
             {/* CSS Animation for noise moving */}
             <style jsx>{`
                 @keyframes noise {

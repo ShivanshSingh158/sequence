@@ -186,23 +186,17 @@ export default function SkillUniverse({
                         </div>
                     </div>
 
-                    {/* Universe Content */}
-                    <div className="flex-1 relative overflow-hidden">
-
+                    {/* UNIVERSE CONTENT - DESKTOP (Physics & Constellation) */}
+                    <div className="hidden md:block flex-1 relative overflow-hidden">
                         {/* Elastic Connecting Lines */}
                         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40">
                             {filteredSkills.map((skill, i) => (
                                 filteredSkills.map((other, j) => {
-                                    if (i >= j) return null; // Avoid duplicates
-
-                                    // Connection Logic
+                                    if (i >= j) return null;
                                     if (skill.category === other.category || Math.abs(skill.id - other.id) < 3) {
-                                        // Find original index to get correct springs
                                         const startIdx = SKILLS.findIndex(s => s.id === skill.id);
                                         const endIdx = SKILLS.findIndex(s => s.id === other.id);
-
                                         if (startIdx === -1 || endIdx === -1) return null;
-
                                         return (
                                             <ElasticLine
                                                 key={`${skill.id}-${other.id}`}
@@ -236,34 +230,86 @@ export default function SkillUniverse({
                                 );
                             })}
                         </AnimatePresence>
+                    </div>
 
-                        {/* Skill Detail Card (Floating) */}
-                        <AnimatePresence>
-                            {selectedSkill && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20, x: '-50%' }}
-                                    animate={{ opacity: 1, y: 0, x: '-50%' }}
-                                    exit={{ opacity: 0, y: 20, x: '-50%' }}
-                                    className="absolute bottom-12 left-1/2 -translate-x-1/2 w-[90%] md:w-[400px] bg-black/80 backdrop-blur-xl border border-white/20 p-6 rounded-2xl z-50"
-                                >
-                                    <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+                    {/* UNIVERSE CONTENT - MOBILE (Vertical Scrollable Starmap) */}
+                    <div className="md:hidden flex-1 overflow-y-auto p-4 pb-24 space-y-8 no-scrollbar">
+                        {categories.filter(c => c !== 'All' && (filter === 'All' || filter === c)).map((category, catIndex) => (
+                            <motion.div
+                                key={category}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: catIndex * 0.1 }}
+                            >
+                                <h3 className="text-xl font-bold text-white/50 mb-4 px-2 uppercase tracking-widest text-xs flex items-center gap-2">
+                                    <span className="w-1 h-3 bg-white/50 rounded-full" />
+                                    {category} Sector
+                                </h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {SKILLS.filter(s => s.category === category).map((skill) => (
+                                        <motion.button
+                                            key={skill.id}
+                                            onClick={() => setSelectedSkill(skill)}
+                                            whileTap={{ scale: 0.95 }}
+                                            className={`
+                                                relative p-4 rounded-xl border flex flex-col items-center gap-3 transition-all duration-300
+                                                ${selectedSkill?.id === skill.id
+                                                    ? 'bg-white/10 border-white/40 shadow-[0_0_20px_rgba(255,255,255,0.1)]'
+                                                    : 'bg-white/5 border-white/5 hover:bg-white/10'
+                                                }
+                                            `}
+                                        >
+                                            {/* @ts-ignore */}
+                                            <skill.icon className="w-8 h-8" style={{ color: skill.color }} />
+                                            <span className="text-sm text-white font-medium">{skill.label}</span>
+
+                                            {/* Selection Indicator */}
+                                            {selectedSkill?.id === skill.id && (
+                                                <motion.div
+                                                    layoutId="mobile-glow"
+                                                    className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/5 to-transparent pointer-events-none"
+                                                />
+                                            )}
+                                        </motion.button>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    {/* DETAIL CARD (Shared Logic, adapted positioning) */}
+                    <AnimatePresence>
+                        {selectedSkill && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 100 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 100 }}
+                                className="fixed bottom-0 left-0 w-full md:w-[400px] md:bottom-12 md:left-1/2 md:-translate-x-1/2 bg-[#0a0a0a] md:bg-black/90 md:backdrop-blur-xl border-t md:border border-white/20 p-6 md:rounded-2xl z-50 shadow-2xl safe-area-bottom"
+                            >
+                                <div className="flex justify-between items-start mb-2">
+                                    <h3 className="text-2xl font-bold text-white flex items-center gap-3">
                                         {/* @ts-ignore */}
                                         <selectedSkill.icon className="w-6 h-6" style={{ color: selectedSkill.color }} />
                                         {selectedSkill.label}
                                     </h3>
-                                    <div className="text-sm text-white/60 font-mono mb-4">
-                                        Category: {selectedSkill.category}
-                                    </div>
-                                    <p className="text-white/80 text-sm leading-relaxed">
-                                        Mastered concepts in {selectedSkill.label}.
-                                        Part of the {selectedSkill.category} constellation.
-                                        Crucial for building scalable applications.
-                                    </p>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
-                    </div>
+                                    <button
+                                        onClick={() => setSelectedSkill(null)}
+                                        className="md:hidden p-1 bg-white/10 rounded-full"
+                                    >
+                                        <X className="w-5 h-5 text-white" />
+                                    </button>
+                                </div>
+                                <div className="text-sm text-white/60 font-mono mb-4">
+                                    Category: {selectedSkill.category}
+                                </div>
+                                <p className="text-white/80 text-sm leading-relaxed">
+                                    Mastered concepts in {selectedSkill.label}.
+                                    Part of the {selectedSkill.category} constellation.
+                                    Crucial for building scalable applications.
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Floating Particles/Dust */}
                     <div className="absolute inset-0 pointer-events-none">

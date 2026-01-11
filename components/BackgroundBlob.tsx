@@ -65,7 +65,7 @@ export default function BackgroundBlob() {
     return (
         <canvas
             ref={canvasRef}
-            className="fixed inset-0 pointer-events-none z-0"
+            className="fixed inset-0 pointer-events-none z-0 hidden md:block"
             style={{ mixBlendMode: 'screen' }}
         />
     );
