@@ -2,7 +2,9 @@
 
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import Link from 'next/link';
+import Link from 'next/link'; // Kept for type safety if needed, or remove. 
+// Actually let's remove it properly.
+
 import AnimatedHome from '@/components/icons/AnimatedHome';
 import AnimatedLayers from '@/components/icons/AnimatedLayers';
 import AnimatedClock from '@/components/icons/AnimatedClock';
@@ -59,7 +61,7 @@ export default function Dock() {
 }
 
 function DockIcon({ mouseX, icon: Icon, href }: { mouseX: any, icon: any, href: string }) {
-    const ref = useRef<HTMLAnchorElement>(null);
+    const ref = useRef<HTMLDivElement>(null);
 
     const distance = useTransform(mouseX, (val: number) => {
         const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
@@ -95,7 +97,7 @@ function DockIcon({ mouseX, icon: Icon, href }: { mouseX: any, icon: any, href: 
     };
 
     return (
-        <Link href={href} ref={ref} scroll={false} onClick={handleClick}>
+        <div ref={ref} onClick={handleClick}>
             <motion.div
                 style={{ width }}
                 className="aspect-square rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/5 cursor-pointer relative group"
@@ -107,6 +109,6 @@ function DockIcon({ mouseX, icon: Icon, href }: { mouseX: any, icon: any, href: 
                     {href === '/' ? 'Home' : href.replace('/#', '').replace(/^\w/, c => c.toUpperCase())}
                 </span>
             </motion.div>
-        </Link>
+        </div>
     );
 }

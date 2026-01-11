@@ -11,6 +11,11 @@ export default function GlitchLoader() {
 
     // Initial check and Timer Logic
     useEffect(() => {
+        // CLEAN URL: Remove hashes like #ecosystem on load
+        if (typeof window !== 'undefined' && window.location.hash) {
+            window.history.replaceState(null, '', window.location.pathname);
+        }
+
         // Change key if you want to force reload for user, e.g. 'loaded_v4'
         const hasLoaded = sessionStorage.getItem('loaded_v4');
         if (hasLoaded) {

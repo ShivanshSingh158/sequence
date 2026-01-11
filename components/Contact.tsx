@@ -61,7 +61,7 @@ export default function Contact() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="w-full max-w-md mb-20 text-left"
+                className="w-full max-w-md mb-8 text-left"
             >
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
                     <div>
@@ -133,7 +133,7 @@ export default function Contact() {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, delay: 0.4 }}
-                className="flex items-center justify-center mt-8"
+                className="flex items-center justify-center mt-2"
             >
                 <a
                     href="https://www.linkedin.com/in/shivansh-singh-48026232a"
