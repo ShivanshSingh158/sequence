@@ -10,11 +10,8 @@ import Dock from "@/components/Dock";
 import SmoothScroll from "@/components/SmoothScroll";
 import PullToRefresh from "@/components/PullToRefresh";
 import ThemeToggle from "@/components/ThemeToggle";
-import DevModeToggle from "@/components/DevModeToggle";
-import DevOverlay from "@/components/DevOverlay";
 import { LoadingProvider } from "@/context/LoadingContext";
 import { ThemeProvider } from "@/context/ThemeContext";
-import { DevModeProvider } from "@/context/DevModeContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -57,22 +54,18 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         <ThemeProvider>
-          <DevModeProvider>
-            <LoadingProvider>
-              <SmoothScroll />
-              <PullToRefresh />
-              <ScrollToTop />
-              <MagneticCursor />
-              <SoundControl />
-              <ThemeToggle />
-              <DevModeToggle />
-              <DevOverlay />
-              <GrainOverlay />
-              <Preloader />
-              <Dock />
-              {children}
-            </LoadingProvider>
-          </DevModeProvider>
+          <LoadingProvider>
+            <SmoothScroll />
+            <PullToRefresh />
+            <ScrollToTop />
+            <MagneticCursor />
+            <SoundControl />
+            <ThemeToggle />
+            <GrainOverlay />
+            <Preloader />
+            <Dock />
+            {children}
+          </LoadingProvider>
         </ThemeProvider>
       </body>
     </html>
