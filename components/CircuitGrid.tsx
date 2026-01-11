@@ -17,13 +17,18 @@ interface Node {
     x: number;
     y: number;
     size: number;
+    baseSize: number;
     active: boolean;
     pulse: number;
+    charge: number; // 0 to 1
 }
 
 export default function CircuitGrid() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // Shockwave State
+    const shockwaveRef = useRef({ active: false, radius: 0, opacity: 0 });
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -58,7 +63,7 @@ export default function CircuitGrid() {
         let mouseY = 0;
         let isHovering = false;
 
-        // Initialize Nodes (Substations)
+        // Initialize Nodes
         const initNodes = () => {
             nodes.length = 0;
             const cols = Math.floor(width / gridSize);
@@ -66,150 +71,193 @@ export default function CircuitGrid() {
 
             for (let i = 0; i < cols; i++) {
                 for (let j = 0; j < rows; j++) {
-                    // Create a structured grid pattern, not random
                     if ((i % 4 === 0 && j % 3 === 0) || Math.random() > 0.92) {
                         nodes.push({
                             x: i * gridSize + gridSize / 2,
                             y: j * gridSize + gridSize / 2,
                             size: Math.random() * 2 + 1.5,
+                            baseSize: Math.random() * 2 + 1.5,
                             active: false,
-                            pulse: 0
+                            pulse: 0,
+                            charge: 0
                         });
                     }
                 }
             }
         };
 
+        const handleClick = () => {
+            // Trigger EMP
+            shockwaveRef.current = { active: true, radius: 0, opacity: 1 };
+        };
+
+        container.addEventListener('click', handleClick);
         initNodes();
+
+        // Helper: Draw Lightning Arc (Recursive Displacement)
+        const drawLightning = (x1: number, y1: number, x2: number, y2: number, intense: boolean) => {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 5) return; // Too short
+
+            const segments = Math.floor(dist / 10);
+            if (segments === 0) return;
+
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+
+            let curX = x1;
+            let curY = y1;
+
+            // Generate jittery path
+            for (let i = 1; i < segments; i++) {
+                const t = i / segments;
+                const nextX = x1 + dx * t;
+                const nextY = y1 + dy * t;
+
+                // Jitter amount based on intensity
+                const jitter = intense ? (Math.random() - 0.5) * 15 : (Math.random() - 0.5) * 4;
+
+                // Perpendicular jitter
+                const perpX = -dy / dist * jitter;
+                const perpY = dx / dist * jitter;
+
+                curX = nextX + perpX;
+                curY = nextY + perpY;
+                ctx.lineTo(curX, curY);
+            }
+
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        };
 
         // Animation Loop
         const animate = () => {
-            ctx.fillStyle = '#0a0a0a'; // Very dark grey background
+            // Semi-transparent clear for trail effect? No, clean redraw for sharpness.
+            ctx.fillStyle = '#050505';
             ctx.fillRect(0, 0, width, height);
 
-            // Draw Grid Lines (Faint Engineering Grid)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            // 1. Draw Faint Background Grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
             ctx.lineWidth = 1;
             ctx.beginPath();
-
             for (let x = gridSize / 2; x < width; x += gridSize) {
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
+                ctx.moveTo(x, 0); ctx.lineTo(x, height);
             }
             for (let y = gridSize / 2; y < height; y += gridSize) {
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
+                ctx.moveTo(0, y); ctx.lineTo(width, y);
             }
             ctx.stroke();
 
-            // Interact with Mouse
-            if (isHovering) {
-                // Spawn "Current" particles
-                if (Math.random() > 0.4) {
-                    particles.push({
-                        x: mouseX,
-                        y: mouseY,
-                        vx: (Math.random() - 0.5) * 4,
-                        vy: (Math.random() - 0.5) * 4,
-                        life: 0,
-                        maxLife: 50,
-                        color: Math.random() > 0.5 ? '#fbbf24' : '#34d399' // Amber/Emerald
-                    });
-                }
+            // 2. Handle EMP Shockwave
+            if (shockwaveRef.current.active) {
+                const wave = shockwaveRef.current;
+                wave.radius += 20; // Fast expansion
+                wave.opacity -= 0.02;
 
-                // Energize nearby nodes
-                nodes.forEach(node => {
-                    const dx = node.x - mouseX;
-                    const dy = node.y - mouseY;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < 200) {
-                        node.active = true;
-                        node.pulse = Math.min(node.pulse + 0.05, 1);
-                    } else {
-                        node.active = false;
-                        node.pulse = Math.max(node.pulse - 0.02, 0);
-                    }
-                });
-            } else {
-                nodes.forEach(node => {
-                    node.active = false;
-                    node.pulse = Math.max(node.pulse - 0.02, 0);
-                });
-            }
-
-            // Draw Nodes (Substations)
-            nodes.forEach(node => {
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, node.size + node.pulse * 2, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(34, 197, 94, ${0.1 + node.pulse * 0.5})`; // Base glow
-                ctx.fill();
-
-                if (node.pulse > 0.01) {
-                    // Core
+                if (wave.opacity <= 0) {
+                    wave.active = false;
+                } else {
+                    // Draw Shockwave Ring
                     ctx.beginPath();
-                    ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(34, 197, 94, ${0.4 + node.pulse * 0.6})`;
-                    ctx.fill();
-
-                    // Expanding Ring (Field)
-                    ctx.beginPath();
-                    ctx.arc(node.x, node.y, node.size + node.pulse * 8, 0, Math.PI * 2);
-                    ctx.strokeStyle = `rgba(34, 197, 94, ${node.pulse * 0.2})`;
+                    ctx.arc(mouseX, mouseY, wave.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(56, 189, 248, ${wave.opacity * 0.5})`; // Cyan Pulse
+                    ctx.lineWidth = 2 + wave.opacity * 10;
                     ctx.stroke();
                 }
-            });
-
-            // Update and Draw Particles (Electron Flow)
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life++;
-
-                // Circuit Trace Physics (Snap to 90 degrees)
-                const modX = p.x % gridSize;
-                const modY = p.y % gridSize;
-                if (Math.abs(modX - gridSize / 2) < 4) {
-                    p.vx = 0;
-                    p.vy = Math.sign(p.vy || 1) * 2;
-                } else if (Math.abs(modY - gridSize / 2) < 4) {
-                    p.vy = 0;
-                    p.vx = Math.sign(p.vx || 1) * 2;
-                }
-
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = Math.max(0, 1 - p.life / p.maxLife);
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalAlpha = 1;
-
-                if (p.life > p.maxLife) particles.splice(i, 1);
             }
 
-            // Draw Connections (Transmission Lines)
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            for (let i = 0; i < nodes.length; i++) {
-                if (nodes[i].pulse > 0.2) {
+            // 3. Logic & Interaction
+            nodes.forEach(node => {
+                let distToMouse = 9999;
+                if (isHovering) {
+                    const dx = node.x - mouseX;
+                    const dy = node.y - mouseY;
+                    distToMouse = Math.sqrt(dx * dx + dy * dy);
+                }
+
+                // EMP Hit Logic
+                if (shockwaveRef.current.active) {
+                    const distToWave = Math.abs(distToMouse - shockwaveRef.current.radius);
+                    if (distToWave < 50) {
+                        node.charge = 1; // Instant Full Charge
+                    }
+                }
+
+                // Mouse Proximity Charge
+                if (distToMouse < 250) {
+                    node.charge = Math.min(node.charge + 0.1, 1);
+                } else {
+                    node.charge = Math.max(node.charge - 0.02, 0);
+                }
+
+                // Pulsing Logic based on Charge
+                node.pulse += 0.05 + (node.charge * 0.2); // Faster pulse when charged
+            });
+
+            // 4. Draw Connections (Lightning Arcs)
+            nodes.forEach((node, i) => {
+                if (node.charge > 0.1) {
                     for (let j = i + 1; j < nodes.length; j++) {
-                        if (nodes[j].pulse > 0.2) {
-                            const dx = nodes[i].x - nodes[j].x;
-                            const dy = nodes[i].y - nodes[j].y;
+                        const other = nodes[j];
+                        if (other.charge > 0.1) {
+                            const dx = node.x - other.x;
+                            const dy = node.y - other.y;
                             const dist = Math.sqrt(dx * dx + dy * dy);
 
-                            // Visualize Load Balancing
-                            if (dist < gridSize * 3.5) {
-                                ctx.strokeStyle = `rgba(251, 191, 36, ${Math.min(nodes[i].pulse, nodes[j].pulse) * 0.4})`; // Amber
-                                ctx.moveTo(nodes[i].x, nodes[i].y);
-                                ctx.lineTo(nodes[j].x, nodes[j].y);
+                            if (dist < gridSize * 4.5) {
+                                // Intensity based on combined charge
+                                const intensity = (node.charge + other.charge) / 2;
+                                ctx.shadowBlur = intensity * 15;
+                                ctx.shadowColor = intensity > 0.8 ? '#38bdf8' : '#a855f7'; // Cyan to Purple
+                                ctx.strokeStyle = intensity > 0.8
+                                    ? `rgba(200, 230, 255, ${intensity})` // White-hot
+                                    : `rgba(168, 85, 247, ${intensity * 0.8})`; // Purple base
+
+                                ctx.lineWidth = intensity * 1.5;
+
+                                // Only draw lightning if highly charged, else simple line
+                                if (intensity > 0.6) {
+                                    drawLightning(node.x, node.y, other.x, other.y, intensity > 0.9);
+                                } else {
+                                    ctx.beginPath();
+                                    ctx.moveTo(node.x, node.y);
+                                    ctx.lineTo(other.x, other.y);
+                                    ctx.stroke();
+                                }
+
+                                ctx.shadowBlur = 0; // Reset
                             }
                         }
                     }
                 }
-            }
-            ctx.stroke();
+            });
+
+            // 5. Draw Nodes
+            nodes.forEach(node => {
+                const pulseSize = Math.sin(node.pulse) * 3; // Breathe
+                const size = node.baseSize + (node.charge * 4) + pulseSize;
+
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
+
+                if (node.charge > 0.8) {
+                    ctx.fillStyle = '#ffffff'; // White Core (Overcharged)
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = '#38bdf8'; // Cyan Glow
+                } else if (node.charge > 0.3) {
+                    ctx.fillStyle = '#a855f7'; // Purple Active
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#a855f7';
+                } else {
+                    ctx.fillStyle = 'rgba(255,255,255,0.1)'; // Dormant
+                }
+
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
 
             requestAnimationFrame(animate);
         };
@@ -235,19 +283,20 @@ export default function CircuitGrid() {
             window.removeEventListener('resize', resize);
             container.removeEventListener('mousemove', onMouseMove);
             container.removeEventListener('mouseleave', onMouseLeave);
+            container.removeEventListener('click', handleClick);
         };
     }, []);
 
     return (
-        <section className="relative w-full h-[60vh] bg-[#0a0a0a] overflow-hidden flex flex-col items-center justify-center">
+        <section className="relative w-full h-[70vh] bg-[#050505] overflow-hidden flex flex-col items-center justify-center cursor-crosshair">
             <div className="absolute top-12 text-center z-10 pointer-events-none px-4 mix-blend-screen">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
-                    className="inline-block px-3 py-1 mb-4 rounded-full border border-green-500/30 bg-green-500/10 backdrop-blur-sm"
+                    className="inline-block px-3 py-1 mb-4 rounded-full border border-cyan-500/30 bg-cyan-500/10 backdrop-blur-sm"
                 >
-                    <span className="text-xs font-mono text-green-400 tracking-widest uppercase">
-                        System Status: Online
+                    <span className="text-xs font-mono text-cyan-400 tracking-widest uppercase">
+                        High Voltage System
                     </span>
                 </motion.div>
 
@@ -255,12 +304,10 @@ export default function CircuitGrid() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight"
+                    className="text-4xl md:text-6xl font-black text-white mb-2 tracking-tight drop-shadow-[0_0_20px_rgba(56,189,248,0.5)]"
                 >
-                    Decentralized Power Grid
+                    THE GRID
                 </motion.h3>
-
-                <div className="h-px w-24 bg-gradient-to-r from-transparent via-green-500 to-transparent mx-auto my-6" />
 
                 <motion.p
                     initial={{ opacity: 0 }}
@@ -268,11 +315,12 @@ export default function CircuitGrid() {
                     transition={{ delay: 0.2 }}
                     className="text-white/70 max-w-xl mx-auto text-sm md:text-base leading-relaxed"
                 >
-                    Visualizing the backbone of <span className="text-white font-medium">ChargeBrize</span>.
-                    Simulating load-balancing and energy distribution across a high-efficiency network.
+                    Visualizing the raw power of connectivity.
+                    <span className="text-cyan-400 font-bold mx-1">Click to Surge.</span>
+                    Drag to Charge.
                     <br />
-                    <span className="text-green-400 mt-2 block font-mono text-xs opacity-80">
-                        [ MOVE CURSOR TO TEST CONNECTIVITY ]
+                    <span className="opacity-50 text-[10px] uppercase tracking-widest mt-4 block">
+                        Simulation: 99.9% Load
                     </span>
                 </motion.p>
             </div>
@@ -281,7 +329,6 @@ export default function CircuitGrid() {
                 <canvas ref={canvasRef} className="block w-full h-full" />
             </div>
 
-            {/* Fade gradients specifically for blending */}
             <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black via-black/80 to-transparent pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
         </section>

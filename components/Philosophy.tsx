@@ -117,7 +117,7 @@ export default function Philosophy() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-purple-900/20 blur-[120px] rounded-full pointer-events-none" />
 
             <div className="max-w-7xl w-full mx-auto relative z-10">
-                <ScrollReveal className="mb-20 text-center">
+                <ScrollReveal width="100%" className="mb-20 text-center">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
