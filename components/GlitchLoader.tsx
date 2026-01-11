@@ -4,8 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
 
 export default function GlitchLoader() {
+    // Lazy initialization to avoid effect flash
+    const [show, setShow] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return !sessionStorage.getItem('loaded_v4');
+        }
+        return true;
+    });
+
     const [progress, setProgress] = useState(0);
-    const [show, setShow] = useState(true);
     const [decodedText, setDecodedText] = useState("LOADING");
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -16,12 +23,7 @@ export default function GlitchLoader() {
             window.history.replaceState(null, '', window.location.pathname);
         }
 
-        // Change key if you want to force reload for user, e.g. 'loaded_v4'
-        const hasLoaded = sessionStorage.getItem('loaded_v4');
-        if (hasLoaded) {
-            setShow(false);
-            return;
-        }
+        if (!show) return; // Already hidden
 
         const duration = 2000;
         const interval = 20;

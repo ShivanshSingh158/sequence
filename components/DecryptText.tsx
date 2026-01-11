@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { useInView } from 'framer-motion';
 
 interface DecryptTextProps {
     text: string;
@@ -21,14 +21,14 @@ export default function DecryptText({
     maxIterations = 10,
 }: DecryptTextProps) {
     const [displayText, setDisplayText] = useState(text);
-    const [isScrambling, setIsScrambling] = useState(false);
+    const hasScrambledRef = useRef(false);
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, amount: 0.5 });
 
     useEffect(() => {
-        if (!isInView || isScrambling) return;
+        if (!isInView || hasScrambledRef.current) return;
 
-        setIsScrambling(true);
+        hasScrambledRef.current = true;
         let iteration = 0;
 
         const interval = setInterval(() => {
@@ -46,7 +46,6 @@ export default function DecryptText({
 
             if (iteration >= text.length) {
                 clearInterval(interval);
-                setIsScrambling(false);
             }
 
             // Non-linear speed: accelerate towards end
@@ -54,7 +53,7 @@ export default function DecryptText({
         }, speed);
 
         return () => clearInterval(interval);
-    }, [isInView, text, speed, isScrambling]);
+    }, [isInView, text, speed]);
 
     return (
         <span ref={ref} className={`${className} font-mono`}>

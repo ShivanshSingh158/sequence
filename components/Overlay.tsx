@@ -13,7 +13,7 @@ export default function Overlay({ forceFinalState = false }: { forceFinalState?:
         if (isLoading || forceFinalState) return;
 
         // 0s: Start
-        setActiveIndex(0);
+        // setActiveIndex(0); // Already 0 by default
 
         // 1.1s: Bridge
         // 0.6s: Bridge (Accelerated by 0.5s)

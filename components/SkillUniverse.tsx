@@ -98,8 +98,11 @@ export default function SkillUniverse({
 
     // Correct way: Call useSpring unconditionally for the static list
     // This creates an array of spring objects { x, y }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const springs = SKILLS.map(() => ({
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         x: useSpring(0, { stiffness: 120, damping: 15 }),
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         y: useSpring(0, { stiffness: 120, damping: 15 })
     }));
 
@@ -312,31 +315,49 @@ export default function SkillUniverse({
                     </AnimatePresence>
 
                     {/* Floating Particles/Dust */}
-                    <div className="absolute inset-0 pointer-events-none">
-                        {[...Array(20)].map((_, i) => (
-                            <motion.div
-                                key={i}
-                                className="absolute bg-white/30 rounded-full"
-                                style={{
-                                    width: Math.random() * 3 + 1,
-                                    height: Math.random() * 3 + 1,
-                                    left: `${Math.random() * 100}%`,
-                                    top: `${Math.random() * 100}%`,
-                                }}
-                                animate={{
-                                    y: [0, -100, 0],
-                                    opacity: [0, 1, 0],
-                                }}
-                                transition={{
-                                    duration: 5 + Math.random() * 5,
-                                    repeat: Infinity,
-                                    ease: "linear"
-                                }}
-                            />
-                        ))}
-                    </div>
+                    <ParticlesOverlay />
                 </motion.div>
             )}
         </AnimatePresence>
+    );
+}
+
+function ParticlesOverlay() {
+    const [particles, setParticles] = useState<{ width: number, height: number, left: string, top: string, duration: number }[]>([]);
+
+    useEffect(() => {
+        setParticles([...Array(20)].map(() => ({
+            width: Math.random() * 3 + 1,
+            height: Math.random() * 3 + 1,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            duration: 5 + Math.random() * 5
+        })));
+    }, []);
+
+    return (
+        <div className="absolute inset-0 pointer-events-none">
+            {particles.map((p, i) => (
+                <motion.div
+                    key={i}
+                    className="absolute bg-white/30 rounded-full"
+                    style={{
+                        width: p.width,
+                        height: p.height,
+                        left: p.left,
+                        top: p.top,
+                    }}
+                    animate={{
+                        y: [0, -100, 0],
+                        opacity: [0, 1, 0],
+                    }}
+                    transition={{
+                        duration: p.duration,
+                        repeat: Infinity,
+                        ease: "linear"
+                    }}
+                />
+            ))}
+        </div>
     );
 }

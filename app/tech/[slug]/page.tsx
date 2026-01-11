@@ -36,7 +36,7 @@ const technologies: Record<string, {
         theme: "emerald-400",
         gradient: "from-emerald-500 to-teal-700",
         vision: [
-            "Hardware is hard, but it's the only way to bridge the physical gap. We didn't want to rely on third-party smart plugs that could be hacked or bricked. We needed total control over the firmware.",
+            "Hardware is hard, but it's the only way to bridge the physical gap. We didn&apos;t want to rely on third-party smart plugs that could be hacked or bricked. We needed total control over the firmware.",
             "Our custom-designed plugs aren't just switches; they are energy meters. They measure voltage, amperage, and power factor in real-time, giving users granular data on their consumption down to the millisecond."
         ],
         engineering: [
@@ -51,8 +51,8 @@ const technologies: Record<string, {
         theme: "teal-400",
         gradient: "from-teal-500 to-cyan-700",
         vision: [
-            "When ten cars plug in at once, the lights shouldn't flicker. But in many older buildings, they do. The grid wasn't designed for the EV revolution.",
-            "Our AI doesn't just react to overloads; it predicts them. By analyzing usage patterns, we can dynamically throttle charging speeds across a cluster of chargers, ensuring the building's main breaker never trips while maximizing throughput."
+            "When ten cars plug in at once, the lights shouldn&apos;t flicker. But in many older buildings, they do. The grid wasn&apos;t designed for the EV revolution.",
+            "Our AI doesn&apos;t just react to overloads; it predicts them. By analyzing usage patterns, we can dynamically throttle charging speeds across a cluster of chargers, ensuring the building's main breaker never trips while maximizing throughput."
         ],
         engineering: [
             "We trained a Reinforcement Learning model using historical load data. The model treats power distribution as a resource allocation game, constantly solving for 'Maximum Satisfaction' without violating 'Max Ampacity'.",
@@ -194,7 +194,7 @@ export default function TechPage() {
 
                             <div className="mt-12 pt-8 border-t border-white/10">
                                 <p className="text-white/60 text-sm italic">
-                                    "Innovation is about solving simple problems with complex engineering, to make them simple again."
+                                    &quot;Innovation is about solving simple problems with complex engineering, to make them simple again.&quot;
                                 </p>
                             </div>
                         </div>
