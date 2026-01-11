@@ -24,8 +24,8 @@ export default function ScrollReveal({
                 }}
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.25 + delay }}
+                viewport={{ once: false, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: 0.2 + delay, ease: "easeOut" }}
             >
                 {children}
             </motion.div>

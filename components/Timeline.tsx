@@ -1,40 +1,41 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { ChevronRight } from 'lucide-react';
 
 const milestones = [
     {
         year: "2023",
         title: "The Genesis",
-        desc: "Started with a simple idea: Decentralized Power. Prototyped the first version of the ChargeBrize smart plug in a garage."
+        desc: "Started with a simple idea: Decentralized Power. Prototyped the first version of the ChargeBrize smart plug in a garage.",
+        details: "Built 5 prototypes using ESP32 and relay modules. Conducted initial field tests in local cafes."
     },
     {
         year: "2024",
         title: "ChargeBrize Launch",
-        desc: "Deployed the first 500 units. The network went live, proving that peer-to-peer energy sharing was viable at scale."
+        desc: "Deployed the first 500 units. The network went live, proving that peer-to-peer energy sharing was viable at scale.",
+        details: "Partnered with 50+ local businesses. Achieved 98% uptime and processed over 10k transactions."
     },
     {
         year: "2024",
         title: "RoadSathi Beta",
-        desc: "Pivoted to roadside assistance. Built the 'Uber for Mechanics' MVP in 3 weeks during a hackathon. It went viral locally."
+        desc: "Pivoted to roadside assistance. Built the 'Uber for Mechanics' MVP in 3 weeks during a hackathon. It went viral locally.",
+        details: "Onboarded 200 mechanics in the first month. Reduced average wait time from 45m to 15m."
     },
     {
         year: "2025",
         title: "Ecosystem Expansion",
-        desc: "Integrated AI Load Balancing and Predictive Logic. The platform evolved from a single app to a comprehensive suite of connected services."
+        desc: "Integrated AI Load Balancing and Predictive Logic. The platform evolved from a single app to a comprehensive suite of connected services.",
+        details: "Unified backend architecture handled 500% traffic spike. Launched predictive maintenance alerts."
     },
     {
         year: "2026",
         title: "Global Scale",
-        desc: "Now scaling to new markets. Building the future of connected infrastructure, one node at a time."
+        desc: "Now scaling to new markets. Building the future of connected infrastructure, one node at a time.",
+        details: "Exploring expansion into SE Asia and MENA regions. Developing next-gen V2G (Vehicle to Grid) protocols."
     }
 ];
-
-import { ChevronDown } from 'lucide-react';
-import { useState } from 'react';
-
-// ... (milestones data remains same but add more details if needed)
 
 export default function Timeline() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,7 @@ export default function Timeline() {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     className="text-center mb-24"
                 >
                     <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tighter">
@@ -85,7 +86,7 @@ export default function Timeline() {
 }
 
 function TimelineItem({ item, index }: { item: any, index: number }) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
         <div className={`relative flex flex-col md:flex-row items-center gap-8 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
@@ -95,52 +96,60 @@ function TimelineItem({ item, index }: { item: any, index: number }) {
                 <motion.div
                     initial={{ opacity: 0, x: index % 2 === 0 ? 50 : -50 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: false, margin: "-100px" }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
                     className={`
-                        relative group cursor-pointer
-                        p-6 rounded-2xl border transition-all duration-300
-                        ${isOpen ? 'bg-white/10 border-purple-500/50 scale-105 shadow-[0_0_30px_rgba(168,85,247,0.2)]' : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-purple-500/30'}
+                        relative group cursor-pointer overflow-hidden
+                        p-6 rounded-2xl border transition-all duration-500
+                        ${isHovered ? 'bg-white/10 border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.2)]' : 'bg-white/5 border-white/10'}
                     `}
-                    onClick={() => setIsOpen(!isOpen)}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
                 >
-                    <div className={`flex items-center gap-4 mb-2 ${index % 2 === 0 ? 'justify-start' : 'md:justify-end justify-start'}`}>
-                        <span className="text-purple-400 font-mono text-sm tracking-widest font-bold">
-                            {item.year}
-                        </span>
-                        {index === milestones.length - 1 && (
-                            <span className="px-2 py-0.5 text-[10px] bg-green-500/20 text-green-400 border border-green-500/50 rounded-full animate-pulse">
-                                CURRENT
-                            </span>
-                        )}
-                    </div>
-
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
-                        {item.title}
-                    </h3>
-
-                    <p className="text-gray-400 font-light leading-relaxed text-sm">
-                        {item.desc}
-                    </p>
-
+                    {/* Normal Content - Fades Out */}
                     <motion.div
-                        initial={false}
-                        animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
-                        className="overflow-hidden"
+                        animate={{ opacity: isHovered ? 0 : 1, y: isHovered ? -20 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="relative z-10"
                     >
-                        <div className="pt-4 mt-4 border-t border-white/10">
-                            <p className="text-sm text-gray-300">
-                                Detailed insights about {item.title} can be added here.
-                                Showing expanded content seamlessly.
-                            </p>
-                            <div className="flex gap-2 mt-3">
-                                <span className="text-xs px-2 py-1 bg-white/5 rounded text-gray-400">#milestone</span>
-                                <span className="text-xs px-2 py-1 bg-white/5 rounded text-gray-400">#growth</span>
-                            </div>
+                        <div className={`flex items-center gap-4 mb-2 ${index % 2 === 0 ? 'justify-start' : 'md:justify-end justify-start'}`}>
+                            <span className="text-purple-400 font-mono text-sm tracking-widest font-bold">
+                                {item.year}
+                            </span>
+                            {index === milestones.length - 1 && (
+                                <span className="px-2 py-0.5 text-[10px] bg-green-500/20 text-green-400 border border-green-500/50 rounded-full animate-pulse">
+                                    CURRENT
+                                </span>
+                            )}
                         </div>
+
+                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                            {item.title}
+                        </h3>
+
+                        <p className="text-gray-400 font-light leading-relaxed text-sm">
+                            {item.desc}
+                        </p>
                     </motion.div>
 
-                    <ChevronDown className={`absolute top-6 right-6 w-5 h-5 text-white/20 transition-transform ${isOpen ? 'rotate-180 text-purple-500' : ''}`} />
+                    {/* Hover Content - Fades In */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0 p-6 flex flex-col justify-center bg-[#0a0a0a]/90 backdrop-blur-md"
+                    >
+                        <h4 className="text-purple-400 font-bold mb-2 text-sm uppercase tracking-wider">
+                            Behind the Scenes
+                        </h4>
+                        <p className="text-gray-200 text-sm leading-relaxed">
+                            {item.details}
+                        </p>
+                        <div className="mt-4 flex gap-2">
+                            <div className="h-1 w-8 bg-purple-500 rounded-full" />
+                            <div className="h-1 w-2 bg-purple-500/50 rounded-full" />
+                        </div>
+                    </motion.div>
 
                 </motion.div>
             </div>
@@ -151,7 +160,7 @@ function TimelineItem({ item, index }: { item: any, index: number }) {
                 <motion.div
                     initial={{ scale: 0 }}
                     whileInView={{ scale: 1 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     className="absolute inset-0 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]"
                 />
             </div>

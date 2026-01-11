@@ -92,13 +92,15 @@ function Flashcard({ product, index }: { product: Product, index: number }) {
     const [isFlipped, setIsFlipped] = useState(false);
 
     return (
-        <TiltCard className="h-[420px] w-full cursor-pointer relative" onClick={() => setIsFlipped(!isFlipped)}>
+        <TiltCard className="h-[420px] w-full cursor-pointer relative" onClick={() => { }}>
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="h-full w-full"
+                onMouseEnter={() => setIsFlipped(true)}
+                onMouseLeave={() => setIsFlipped(false)}
             >
                 <div className={`relative h-full w-full transition-all duration-700 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
 
@@ -123,7 +125,7 @@ function Flashcard({ product, index }: { product: Product, index: number }) {
                         </h3>
 
                         <div className="absolute bottom-8 text-white/20 text-xs font-mono uppercase tracking-[0.2em]">
-                            Hover / Click to Flip
+                            Hover to Reveal
                         </div>
                     </div>
 
