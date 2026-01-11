@@ -9,6 +9,7 @@ import Contact from "@/components/Contact";
 export default function Home() {
   return (
     <main className="w-full">
+      {/* Netlify Deployment Trigger */}
       <ScrollyCanvas />
       <AgencyIntro />
       <SkillsConstellation />

@@ -133,7 +133,7 @@ export default function SkillUniverse({
                     />
 
                     {/* Controls Header */}
-                    <div className="relative z-20 flex justify-between items-center p-6 md:p-8 backdrop-blur-md border-b border-white/10">
+                    <div className="relative z-20 flex justify-between items-center p-6 md:p-8 backdrop-blur-md border-b border-white/10 cursor-default">
                         <div>
                             <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">Skill Universe</h2>
                             <div className="flex gap-2 text-xs md:text-sm flex-wrap">
@@ -187,7 +187,7 @@ export default function SkillUniverse({
                     </div>
 
                     {/* Universe Content */}
-                    <div className="flex-1 relative overflow-hidden cursor-crosshair">
+                    <div className="flex-1 relative overflow-hidden cursor-default">
 
                         {/* Elastic Connecting Lines */}
                         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40">

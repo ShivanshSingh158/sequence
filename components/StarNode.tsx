@@ -53,7 +53,7 @@ export default function StarNode({
     return (
         <motion.div
             ref={ref}
-            className="absolute flex flex-col items-center justify-center cursor-none z-10 group"
+            className="absolute flex flex-col items-center justify-center cursor-pointer z-10 group"
             style={{
                 left: `${x}%`,
                 top: `${y}%`,

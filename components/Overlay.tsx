@@ -1,37 +1,22 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { motion, AnimatePresence, MotionValue, useMotionValueEvent } from 'framer-motion';
+import { useState } from 'react';
 import { useLoading } from '@/context/LoadingContext';
 
-export default function Overlay() {
+export default function Overlay({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
     const { isLoading } = useLoading();
     const [activeIndex, setActiveIndex] = useState(0);
 
-    useEffect(() => {
-        // Only start the sequence when loading is DONE
-        if (isLoading) return;
-
-        // Sequence Timings based on 3.8s video duration (120 frames * 32ms)
-
-        // 0s: Start with Section 0 ("Crafting...")
-        // NOTE: We could set activeIndex(0) here if we wanted to be sure, but state starts at 0.
-
-        // 1.8s: Switch to Section 1 ("Bridge...") (Faster pace)
-        const timer1 = setTimeout(() => {
+    useMotionValueEvent(scrollProgress, "change", (latest) => {
+        if (latest < 0.35) {
+            setActiveIndex(0);
+        } else if (latest >= 0.35 && latest < 0.75) {
             setActiveIndex(1);
-        }, 1800);
-
-        // 4.2s: Switch to Section 2 ("ShivansH!!" - Final)
-        const timer2 = setTimeout(() => {
+        } else {
             setActiveIndex(2);
-        }, 4200);
-
-        return () => {
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-        };
-    }, [isLoading]);
+        }
+    });
 
     return (
         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">

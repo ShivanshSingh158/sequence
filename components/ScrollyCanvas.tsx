@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Overlay from './Overlay';
 
 export default function ScrollyCanvas() {
@@ -10,16 +10,19 @@ export default function ScrollyCanvas() {
     const [images, setImages] = useState<HTMLImageElement[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    // Animation State
-    const frameIndexRef = useRef(0);
-    const requestRef = useRef<number>(0);
-    const lastTimeRef = useRef<number>(0);
-    const fpsInterval = 1000 / 30; // Target 30fps for cinematic feel (or 60 for smooth)
+    // Scroll Logic
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"]
+    });
+
+    // Smooth scroll progress to avoid jittery frames
+    const smoothProgress = useSpring(scrollYProgress, { stiffness: 200, damping: 20, mass: 0.5 });
 
     // Load images
     useEffect(() => {
         const loadImages = async () => {
-            const imageCount = 120;
+            const imageCount = 120; // Ensure this matches your sequence length
             const promises: Promise<HTMLImageElement | null>[] = [];
 
             for (let i = 0; i < imageCount; i++) {
@@ -31,7 +34,6 @@ export default function ScrollyCanvas() {
                     img.src = src;
                     img.onload = () => resolve(img);
                     img.onerror = () => {
-                        // console.error(`Failed to load: ${src}`); // Suppress noise
                         resolve(null);
                     };
                 });
@@ -94,60 +96,55 @@ export default function ScrollyCanvas() {
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
     }, [images]);
 
-    // Animation Loop
-    const animate = useCallback((time: number) => {
-        if (!lastTimeRef.current) lastTimeRef.current = time;
-        const delta = time - lastTimeRef.current;
-
-        if (delta > fpsInterval) {
-            // Update frame
-            if (frameIndexRef.current < images.length - 1) {
-                frameIndexRef.current += 1;
-                renderFrame(frameIndexRef.current);
-            }
-            lastTimeRef.current = time - (delta % fpsInterval);
-        }
-
-        requestRef.current = requestAnimationFrame(animate);
-    }, [images.length, fpsInterval, renderFrame]);
-
-    // Init & Events
+    // Scroll Loop
     useEffect(() => {
         if (!isLoaded || images.length === 0) return;
 
         setupCanvas();
-        window.addEventListener('resize', setupCanvas);
+        const handleResize = () => {
+            setupCanvas();
+            // Re-render current frame on resize
+            const currentProg = smoothProgress.get();
+            const frameIndex = Math.min(
+                Math.floor(currentProg * (images.length - 1)),
+                images.length - 1
+            );
+            renderFrame(frameIndex);
+        };
 
-        // Start Animation
-        lastTimeRef.current = performance.now();
-        requestRef.current = requestAnimationFrame(animate);
+        window.addEventListener('resize', handleResize);
+
+        // Subscribe to spring changes
+        const unsubscribe = smoothProgress.on("change", (latest) => {
+            const frameIndex = Math.min(
+                Math.floor(latest * (images.length - 1)),
+                images.length - 1
+            );
+            requestAnimationFrame(() => renderFrame(frameIndex));
+        });
+
+        // Initial render
+        renderFrame(0);
 
         return () => {
-            window.removeEventListener('resize', setupCanvas);
-            cancelAnimationFrame(requestRef.current);
+            window.removeEventListener('resize', handleResize);
+            unsubscribe();
         };
-    }, [isLoaded, images, setupCanvas, animate]);
-
-    // Handle Scroll Reset / Replay
-    const onViewportEnter = () => {
-        frameIndexRef.current = 0;
-        lastTimeRef.current = performance.now();
-    };
+    }, [isLoaded, images, setupCanvas, renderFrame, smoothProgress]);
 
     return (
-        <div ref={containerRef} className="h-screen relative bg-[#121212]">
+        <div ref={containerRef} className="h-[400vh] relative bg-[#121212]">
             {/* Sticky container for smooth pinning */}
             <motion.div
                 className="sticky top-0 h-screen w-full overflow-hidden"
-                onViewportEnter={onViewportEnter}
             >
                 <canvas
                     ref={canvasRef}
                     className="block w-full h-full object-cover"
-                    style={{ width: '100%', height: '100%' }} // Ensure CSS size is explicit
+                    style={{ width: '100%', height: '100%' }}
                 />
 
-                <Overlay />
+                <Overlay scrollProgress={smoothProgress} />
 
                 {!isLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black z-50">
