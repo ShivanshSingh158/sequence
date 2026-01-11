@@ -6,11 +6,12 @@ import Link from 'next/link';
 import AnimatedHome from '@/components/icons/AnimatedHome';
 import AnimatedLayers from '@/components/icons/AnimatedLayers';
 import AnimatedClock from '@/components/icons/AnimatedClock';
-import AnimatedSparkles from '@/components/icons/AnimatedSparkles';
+import AnimatedMail from '@/components/icons/AnimatedMail';
+import AnimatedCode from '@/components/icons/AnimatedCode';
 
 const items = [
     { id: 'home', icon: AnimatedHome, label: 'Home', href: '/' },
-    { id: 'skills', icon: AnimatedSparkles, label: 'Skills', href: '/#skills' },
+    { id: 'skills', icon: AnimatedCode, label: 'Skills', href: '/#skills' },
     { id: 'ecosystem', icon: AnimatedLayers, label: 'Work', href: '/#ecosystem' },
     { id: 'timeline', icon: AnimatedClock, label: 'Journey', href: '/#timeline' },
     { id: 'contact', icon: AnimatedMail, label: 'Contact', href: '/#contact' },
