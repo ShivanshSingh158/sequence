@@ -41,7 +41,7 @@ export default function Contact() {
 
     return (
         <section
-            className="w-full h-full py-32 px-6 bg-black flex flex-col items-center justify-center text-center"
+            className="relative w-full min-h-screen py-32 px-6 bg-black flex flex-col items-center justify-center text-center z-10"
         >
             {/* Visual Separator Line at top of footer */}
             <div className="absolute top-0 left-0 w-full h-px bg-white/10" />
