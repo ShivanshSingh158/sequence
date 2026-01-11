@@ -6,34 +6,34 @@ import { ChevronRight } from 'lucide-react';
 
 const milestones = [
     {
-        year: "2023",
-        title: "The Genesis",
-        desc: "Started with a simple idea: Decentralized Power. Prototyped the first version of the ChargeBrize smart plug in a garage.",
-        details: "Built 5 prototypes using ESP32 and relay modules. Conducted initial field tests in local cafes."
+        year: "2024",
+        title: "The Foundation",
+        desc: "Joined Punjab Engineering College (PEC) in Electrical Engineering after cracking the rigorous JEE exams.",
+        details: "Proved analytical rigor and technical aptitude early on. The intersection of hardware (Electrical) and software (Code) became the new playground."
     },
     {
         year: "2024",
-        title: "ChargeBrize Launch",
-        desc: "Deployed the first 500 units. The network went live, proving that peer-to-peer energy sharing was viable at scale.",
-        details: "Partnered with 50+ local businesses. Achieved 98% uptime and processed over 10k transactions."
-    },
-    {
-        year: "2024",
-        title: "RoadSathi Beta",
-        desc: "Pivoted to roadside assistance. Built the 'Uber for Mechanics' MVP in 3 weeks during a hackathon. It went viral locally.",
-        details: "Onboarded 200 mechanics in the first month. Reduced average wait time from 45m to 15m."
+        title: "Hello World",
+        desc: "Started the web development journey. Moved from writing basic scripts to building functional web applications.",
+        details: "Mastered the core trilogy: HTML, CSS, and JavaScript. The realization that code could solve real-world problems sparked a fire."
     },
     {
         year: "2025",
-        title: "Ecosystem Expansion",
-        desc: "Integrated AI Load Balancing and Predictive Logic. The platform evolved from a single app to a comprehensive suite of connected services.",
-        details: "Unified backend architecture handled 500% traffic spike. Launched predictive maintenance alerts."
+        title: "ChargeBrize",
+        desc: "Founded 'ChargeBrize' as a solo venture to tackle India's crumbling EV infrastructure.",
+        details: "Proposed a decentralized model to stabilize the grid. Built the entire platform from scratch, merging electrical concepts with web tech."
+    },
+    {
+        year: "2025",
+        title: "RoadSathi",
+        desc: "Co-founded 'RoadSathi' with a team of 3. Built the 'Uber for Mechanics' to help stranded travelers on highways.",
+        details: "A college venture with a clear motto: Connect mechanics to users instantly. Validated the idea with real-world prototypes and team collaboration."
     },
     {
         year: "2026",
-        title: "Global Scale",
-        desc: "Now scaling to new markets. Building the future of connected infrastructure, one node at a time.",
-        details: "Exploring expansion into SE Asia and MENA regions. Developing next-gen V2G (Vehicle to Grid) protocols."
+        title: "Full Stack Evolution",
+        desc: "Deep diving into advanced Backend & Frontend architectures. Aspiring to define the future of digital engineering.",
+        details: "Expanding the arsenal with Next.js, Databases, and System Design. The goal is clear: Become a world-class Full Stack Developer."
     }
 ];
 

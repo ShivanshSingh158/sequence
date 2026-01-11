@@ -4,7 +4,7 @@ import SkillsConstellation from "@/components/SkillsConstellation";
 import Ecosystem from "@/components/Ecosystem";
 import CircuitGrid from "@/components/CircuitGrid";
 import Timeline from "@/components/Timeline";
-import Process from "@/components/Process";
+import Philosophy from "@/components/Philosophy"; // Renamed from Process
 import Contact from "@/components/Contact";
 import VoltageBootLoader from "@/components/VoltageBootLoader";
 
@@ -20,8 +20,8 @@ export default function Home() {
       </div>
       <Ecosystem />
       <CircuitGrid />
+      <Philosophy />
       <Timeline />
-      <Process />
 
       <div id="contact" className="relative z-10 bg-black">
         <Contact />
