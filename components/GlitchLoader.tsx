@@ -2,8 +2,10 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
+import { useLoading } from '@/context/LoadingContext';
 
 export default function GlitchLoader() {
+    const { setIsLoading } = useLoading();
     const [progress, setProgress] = useState(0);
     const [show, setShow] = useState(true);
     const [decodedText, setDecodedText] = useState("LOADING");
@@ -20,6 +22,7 @@ export default function GlitchLoader() {
         const hasLoaded = sessionStorage.getItem('loaded_v4');
         if (hasLoaded) {
             setShow(false);
+            setIsLoading(false); // Immediate unlock
             return;
         }
 
@@ -33,7 +36,10 @@ export default function GlitchLoader() {
                 const next = prev + inc;
                 if (next >= 100) {
                     clearInterval(timer);
-                    setTimeout(() => setShow(false), 500);
+                    setTimeout(() => {
+                        setShow(false);
+                        setIsLoading(false); // Global unlock
+                    }, 500);
                     return 100;
                 }
                 return next;

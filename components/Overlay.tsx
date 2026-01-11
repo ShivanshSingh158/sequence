@@ -8,10 +8,12 @@ export default function Overlay({ progress }: { progress: any, forceFinalState?:
     const { isLoading } = useLoading();
 
     // Text 1: "I build digital experiences" (0% - 30%)
-    const opacity1 = useTransform(progress, [0, 0.05, 0.25, 0.3], [0, 1, 1, 0]);
-    const y1 = useTransform(progress, [0, 0.3], [20, 0]);
-    const filter1 = useTransform(progress, [0, 0.05, 0.25, 0.3], ['blur(10px)', 'blur(0px)', 'blur(0px)', 'blur(10px)']);
-    const scale1 = useTransform(progress, [0, 0.3], [0.9, 1]);
+    // Text 1: "I build digital experiences" (0% - 30%)
+    // START VISIBLE: Opacity starts at 1, stays 1 until 0.25, then fades out
+    const opacity1 = useTransform(progress, [0, 0.25, 0.3], [1, 1, 0]);
+    const y1 = useTransform(progress, [0, 0.3], [0, -20]); // Optional: Parallax up
+    const filter1 = useTransform(progress, [0, 0.05, 0.25, 0.3], ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(10px)']);
+    const scale1 = useTransform(progress, [0, 0.3], [1, 1.1]); // Subtle grow
 
     // Text 2: "A bridge between..." (35% - 65%)
     const opacity2 = useTransform(progress, [0.35, 0.4, 0.6, 0.65], [0, 1, 1, 0]);
