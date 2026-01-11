@@ -88,32 +88,25 @@ function DockIcon({ mouseX, icon: Icon, href }: { mouseX: any, icon: any, href: 
             const id = href.replace('/#', '');
             const element = document.getElementById(id);
             if (element) {
-                // Calculate offset if needed, but smooth scrolling usually lands well.
-                // We add a tiny buffer (-50px) if header overlaps, though we don't have a sticky header.
-                // Default scrollIntoView is safer.
-                if (element) {
-                    // Calculate offset if needed, but smooth scrolling usually lands well.
-                    // We add a tiny buffer (-50px) if header overlaps, though we don't have a sticky header.
-                    // Default scrollIntoView is safer.
-                    element.scrollIntoView({ behavior: 'smooth' });
-                    // Don't update URL to keep it clean
-                }
+                element.scrollIntoView({ behavior: 'smooth' });
+                // Don't update URL to keep it clean
             }
-        };
+        }
+    };
 
-        return (
-            <Link href={href} ref={ref} scroll={false} onClick={handleClick}>
-                <motion.div
-                    style={{ width }}
-                    className="aspect-square rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/5 cursor-pointer relative group"
-                >
-                    <Icon className="w-1/2 h-1/2 text-white/80 group-hover:text-white transition-colors" />
+    return (
+        <Link href={href} ref={ref} scroll={false} onClick={handleClick}>
+            <motion.div
+                style={{ width }}
+                className="aspect-square rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/5 cursor-pointer relative group"
+            >
+                <Icon className="w-1/2 h-1/2 text-white/80 group-hover:text-white transition-colors" />
 
-                    {/* Optional Tooltip for clarity */}
-                    <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">
-                        {href === '/' ? 'Home' : href.replace('/#', '').replace(/^\w/, c => c.toUpperCase())}
-                    </span>
-                </motion.div>
-            </Link>
-        );
-    }
+                {/* Optional Tooltip for clarity */}
+                <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">
+                    {href === '/' ? 'Home' : href.replace('/#', '').replace(/^\w/, c => c.toUpperCase())}
+                </span>
+            </motion.div>
+        </Link>
+    );
+}
