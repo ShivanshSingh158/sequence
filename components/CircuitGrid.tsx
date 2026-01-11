@@ -47,13 +47,17 @@ export default function CircuitGrid() {
             const dpr = window.devicePixelRatio || 1;
             canvas.width = width * dpr;
             canvas.height = height * dpr;
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.scale(dpr, dpr);
             canvas.style.width = `${width}px`;
             canvas.style.height = `${height}px`;
+
+            // Re-init nodes if grid dimensions change
+            initNodes();
         };
 
         window.addEventListener('resize', resize);
-        resize();
+        setTimeout(resize, 100); // Force check after mount layout
 
         // Grid Configuration
         const gridSize = 40;
@@ -140,7 +144,7 @@ export default function CircuitGrid() {
             ctx.fillRect(0, 0, width, height);
 
             // 1. Draw Faint Background Grid
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'; // Increased visibility
             ctx.lineWidth = 1;
             ctx.beginPath();
             for (let x = gridSize / 2; x < width; x += gridSize) {
@@ -252,7 +256,7 @@ export default function CircuitGrid() {
                     ctx.shadowBlur = 10;
                     ctx.shadowColor = '#a855f7';
                 } else {
-                    ctx.fillStyle = 'rgba(255,255,255,0.1)'; // Dormant
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)'; // VISIBLE Dormant State
                 }
 
                 ctx.fill();

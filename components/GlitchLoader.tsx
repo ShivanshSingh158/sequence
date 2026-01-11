@@ -1,18 +1,18 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
-
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+import { useEffect, useState, useRef } from 'react';
 
 export default function GlitchLoader() {
     const [progress, setProgress] = useState(0);
     const [show, setShow] = useState(true);
     const [decodedText, setDecodedText] = useState("LOADING");
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    // Initial check and Timer Logic
     useEffect(() => {
-        // Change key to force a new load for the user
-        const hasLoaded = sessionStorage.getItem('loaded_v3');
+        // Change key if you want to force reload for user, e.g. 'loaded_v4'
+        const hasLoaded = sessionStorage.getItem('loaded_v4');
         if (hasLoaded) {
             setShow(false);
             return;
@@ -35,16 +35,12 @@ export default function GlitchLoader() {
             });
         }, interval);
 
-        // Decoding Effect
+        // Text Decoding
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         const scrambleTimer = setInterval(() => {
             setDecodedText(prev =>
-                prev.split('').map((char, index) => {
-                    if (Math.random() > 0.5) {
-                        return CHARS[Math.floor(Math.random() * CHARS.length)];
-                    }
-                    // Specific goal text "SYSTEM READY" or keep random?
-                    // Let's just keep it random chaos until the end
-                    return CHARS[Math.floor(Math.random() * CHARS.length)];
+                prev.split('').map(() => {
+                    return chars[Math.floor(Math.random() * chars.length)];
                 }).join('')
             );
         }, 50);
@@ -55,8 +51,78 @@ export default function GlitchLoader() {
         };
     }, []);
 
+    // Matrix Rain Animation
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        const resize = () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        };
+        window.addEventListener('resize', resize);
+
+        // Configuration
+        const text = "ShivansH!!";
+        const fontSize = 14;
+        const columns = width / fontSize;
+        const drops: number[] = [];
+
+        // Initialize drops at random y positions to simulate "already raining"
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * -100; // Start above screen
+        }
+
+        const animate = () => {
+            // Semi-transparent fade to create trails
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = '#0F0'; // Green text (Matrix style) or maybe Cyan for brand?
+            // Let's go with a premium Cyan/White fading
+            ctx.font = `${fontSize}px monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                // Randomly pick a character from the name
+                const char = text[Math.floor(Math.random() * text.length)];
+
+                // Color variation
+                const isHead = Math.random() > 0.95;
+                ctx.fillStyle = isHead ? '#fff' : 'rgba(34, 211, 238, 0.3)'; // White head, Cyan trail
+
+                // x = column index * font size, y = value in drops array * font size
+                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+                // Reset drop to top randomly after it crosses screen
+                if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                // Increment y
+                drops[i]++;
+            }
+            requestAnimationFrame(animate);
+        };
+
+        const animId = requestAnimationFrame(animate);
+
+        return () => {
+            cancelAnimationFrame(animId);
+            window.removeEventListener('resize', resize);
+        };
+    }, []);
+
     const onExit = () => {
-        sessionStorage.setItem('loaded_v3', 'true');
+        sessionStorage.setItem('loaded_v4', 'true');
     }
 
     if (!show) return null;
@@ -72,10 +138,14 @@ export default function GlitchLoader() {
                         transition: { duration: 0.8 }
                     }}
                 >
-                    {/* Progress Bar background connection */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                        <div className="w-[200vw] h-[200vw] rounded-full border-[100px] border-white animate-spin-slow" />
-                    </div>
+                    {/* Matrix Rain Canvas */}
+                    <canvas
+                        ref={canvasRef}
+                        className="absolute inset-0 w-full h-full opacity-40"
+                    />
+
+                    {/* Radial Vignette to focus center */}
+                    <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/80 to-black pointer-events-none" />
 
                     <div className="relative z-10 flex flex-col items-center">
                         <motion.h1
@@ -91,7 +161,7 @@ export default function GlitchLoader() {
                             </p>
                         </div>
 
-                        {/* Thin line */}
+                        {/* Progress Line */}
                         <div className="w-64 h-px bg-white/20 mt-8 relative overflow-hidden">
                             <motion.div
                                 className="absolute left-0 top-0 h-full bg-cyan-400 box-shadow-[0_0_10px_cyan]"
