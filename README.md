@@ -10,6 +10,7 @@ I built this using the modern React stack:
 -   **Language**: TypeScript
 -   **Styling**: Tailwind CSS (v4)
 -   **Animations**: Framer Motion
+-   **Loader**: Custom "Identity Rain" Glitch Effect (HTML5 Canvas)
 -   **Canvas**: Native HTML5 Canvas for the image sequence
 -   **Emails**: Nodemailer (server-side sending)
 
@@ -51,11 +52,12 @@ Here's a quick map so you don't get lost:
     -   `api/contact`: The backend endpoint for sending emails.
 -   `/components`: All the UI pieces.
     -   `ScrollyCanvas.tsx`: The big animation loop on the homepage.
+    -   `GlitchLoader.tsx`: The "Matrix/Rain" style entry loader.
     -   `Ecosystem.tsx`: The cards section with the "Flip" and "Learn More" logic.
 -   `/public/sequence`: The 120+ optimized WebP frames for the scroll animation.
 
 ## Deploying
-I host this on **Vercel**. It's the easiest way. Just push your code, connect the repo on Vercel, and add those same Environment Variables in the project settings.
+I host this on **Netlify** (migrated from Vercel). It works seamlessly with the Next.js adapter. Just connect your repo and add the environment variables.
 
 ---
 *Feel free to poke around the code! If you see something that could be optimized, let me know.*
