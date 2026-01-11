@@ -94,10 +94,10 @@ function TimelineItem({ item, index }: { item: any, index: number }) {
             {/* Content Side */}
             <div className={`flex-1 w-full pl-12 md:pl-0 ${index % 2 === 0 ? 'md:text-left' : 'md:text-right'}`}>
                 <motion.div
-                    initial={{ opacity: 0, x: index % 2 === 0 ? 50 : -50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: false, margin: "-100px" }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
+                    initial={{ opacity: 0, x: index % 2 === 0 ? 100 : -100, scale: 0.9 }}
+                    whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                    viewport={{ once: false, amount: 0.4 }}
+                    transition={{ type: "spring", stiffness: 50, damping: 20 }}
                     className={`
                         relative group cursor-pointer overflow-hidden
                         p-6 rounded-2xl border transition-all duration-500

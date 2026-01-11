@@ -1,11 +1,8 @@
 'use client';
 
-import { motion, useSpring } from 'framer-motion';
+import { motion, MotionValue } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 import { useRef } from 'react';
-
-// Mouse hook helper (simplified)
-const useMouse = () => ({ x: 0, y: 0 }); // Placeholder if not using global context yet
 
 interface StarNodeProps {
     x: number;
@@ -17,6 +14,8 @@ interface StarNodeProps {
     color?: string;
     onClick?: () => void;
     delay?: number;
+    xSpring: MotionValue<number>;
+    ySpring: MotionValue<number>;
 }
 
 export default function StarNode({
@@ -28,19 +27,11 @@ export default function StarNode({
     isActive = false,
     color = '#ffffff',
     onClick,
-    delay = 0
+    delay = 0,
+    xSpring,
+    ySpring
 }: StarNodeProps) {
     const ref = useRef<HTMLDivElement>(null);
-    const { x: mouseX, y: mouseY } = useMouse();
-
-    // Magnetic Effect Logic
-    // We need to calculate distance from this node to mouse to apply force
-    // Since we don't have global mouse context easily, we'll use a local hover-based magnet for now
-    // Or simpler: High-end "float" + standard parallax
-
-    // Simple Floating Animation
-    const yOffset = useSpring(0, { stiffness: 100, damping: 10 });
-    const xOffset = useSpring(0, { stiffness: 100, damping: 10 });
 
     const handleMouseMove = (e: React.MouseEvent) => {
         const rect = ref.current?.getBoundingClientRect();
@@ -49,14 +40,14 @@ export default function StarNode({
             const centerY = rect.top + rect.height / 2;
             const flowX = (e.clientX - centerX) * 0.5; // Magnetic pull strength
             const flowY = (e.clientY - centerY) * 0.5;
-            xOffset.set(flowX);
-            yOffset.set(flowY);
+            xSpring.set(flowX);
+            ySpring.set(flowY);
         }
     };
 
     const handleMouseLeave = () => {
-        xOffset.set(0);
-        yOffset.set(0);
+        xSpring.set(0);
+        ySpring.set(0);
     };
 
     return (
@@ -66,8 +57,8 @@ export default function StarNode({
             style={{
                 left: `${x}%`,
                 top: `${y}%`,
-                x: xOffset,
-                y: yOffset,
+                x: xSpring,
+                y: ySpring,
                 transform: 'translate(-50%, -50%)' // Base centering
             }}
             initial={{ scale: 0, opacity: 0 }}

@@ -1,12 +1,12 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useSpring, useTransform, MotionValue } from 'framer-motion';
 import { Database, Server, Cpu, Layers, Zap, Workflow, MessageSquare, X } from 'lucide-react';
 import { ReactIcon, NextIcon, TailwindIcon, JsIcon, TsIcon, NodeIcon, HtmlIcon, CssIcon, MongoIcon } from './SkillIcons';
 import StarNode from './StarNode';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
-// Skill Data
+// Skill Data (unchanged)
 const SKILLS = [
     // Frontend
     { id: 1, label: 'HTML', icon: HtmlIcon, category: 'Frontend', x: 15, y: 30, color: '#E44D26' },
@@ -41,6 +41,41 @@ const THEMES = {
     minimal: { bg: 'bg-[#121212]', accent: 'text-white', grid: 'opacity-5' },
 };
 
+// Elastic Line Component
+const ElasticLine = ({
+    start,
+    end,
+    startSpring,
+    endSpring
+}: {
+    start: { x: number, y: number },
+    end: { x: number, y: number },
+    startSpring: { x: MotionValue, y: MotionValue },
+    endSpring: { x: MotionValue, y: MotionValue }
+}) => {
+    // Transform percent coordinates + spring pixel offsets back to percent strings (or usage in SVG)
+    // Actually simpler: SVG lines take standard props. We can use `useTransform` to produce string "calc(X% + Ypx)"
+
+    const x1 = useTransform(startSpring.x, (val) => `calc(${start.x}% + ${val}px)`);
+    const y1 = useTransform(startSpring.y, (val) => `calc(${start.y}% + ${val}px)`);
+    const x2 = useTransform(endSpring.x, (val) => `calc(${end.x}% + ${val}px)`);
+    const y2 = useTransform(endSpring.y, (val) => `calc(${end.y}% + ${val}px)`);
+
+    return (
+        <motion.line
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="white"
+            strokeWidth="1"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 0.3 }} // Lower opacity for high-tech look
+            transition={{ duration: 1.5, delay: 0.2 }}
+        />
+    );
+};
+
 export default function SkillUniverse({
     isOpen,
     onClose
@@ -51,6 +86,22 @@ export default function SkillUniverse({
     const [activeTheme, setActiveTheme] = useState<'cosmic' | 'cyberpunk' | 'minimal'>('cosmic');
     const [selectedSkill, setSelectedSkill] = useState<typeof SKILLS[0] | null>(null);
     const [filter, setFilter] = useState<string>('All');
+
+    // Initialize Physics Engine (Springs for every skill)
+    // We treat SKILLS as static for initialization to keep hook order constant.
+    const physicsEngine = useMemo(() => {
+        // This is a bit "hacky" in pure React but since SKILLS is constant, it works perfectly for this effect
+        // NOTE: We cannot call hooks inside useMemo. We must map gently.
+        // Actually, we need to call useSpring at the top level.
+        return null;
+    }, []);
+
+    // Correct way: Call useSpring unconditionally for the static list
+    // This creates an array of spring objects { x, y }
+    const springs = SKILLS.map(() => ({
+        x: useSpring(0, { stiffness: 120, damping: 15 }),
+        y: useSpring(0, { stiffness: 120, damping: 15 })
+    }));
 
     // Reset selection when closing
     useEffect(() => {
@@ -138,25 +189,27 @@ export default function SkillUniverse({
                     {/* Universe Content */}
                     <div className="flex-1 relative overflow-hidden cursor-crosshair">
 
-                        {/* Connecting Lines */}
-                        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20">
+                        {/* Elastic Connecting Lines */}
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40">
                             {filteredSkills.map((skill, i) => (
                                 filteredSkills.map((other, j) => {
                                     if (i >= j) return null; // Avoid duplicates
-                                    // Connect if in same category or adjacent IDs (hacky connection logic but works for visuals)
+
+                                    // Connection Logic
                                     if (skill.category === other.category || Math.abs(skill.id - other.id) < 3) {
+                                        // Find original index to get correct springs
+                                        const startIdx = SKILLS.findIndex(s => s.id === skill.id);
+                                        const endIdx = SKILLS.findIndex(s => s.id === other.id);
+
+                                        if (startIdx === -1 || endIdx === -1) return null;
+
                                         return (
-                                            <motion.line
+                                            <ElasticLine
                                                 key={`${skill.id}-${other.id}`}
-                                                x1={`${skill.x}%`}
-                                                y1={`${skill.y}%`}
-                                                x2={`${other.x}%`}
-                                                y2={`${other.y}%`}
-                                                stroke="white"
-                                                strokeWidth="1"
-                                                initial={{ pathLength: 0, opacity: 0 }}
-                                                animate={{ pathLength: 1, opacity: 0.5 }}
-                                                transition={{ duration: 1, delay: 0.5 }}
+                                                start={{ x: skill.x, y: skill.y }}
+                                                end={{ x: other.x, y: other.y }}
+                                                startSpring={springs[startIdx]}
+                                                endSpring={springs[endIdx]}
                                             />
                                         );
                                     }
@@ -165,18 +218,23 @@ export default function SkillUniverse({
                             ))}
                         </svg>
 
-                        {/* Stars */}
+                        {/* Stars with Physics */}
                         <AnimatePresence>
-                            {filteredSkills.map((skill, index) => (
-                                <StarNode
-                                    key={skill.id}
-                                    {...skill}
-                                    isActive={selectedSkill?.id === skill.id}
-                                    onClick={() => setSelectedSkill(skill)}
-                                    delay={index * 0.05}
-                                    icon={skill.icon as any} // Cast safely
-                                />
-                            ))}
+                            {filteredSkills.map((skill, index) => {
+                                const originalIndex = SKILLS.findIndex(s => s.id === skill.id);
+                                return (
+                                    <StarNode
+                                        key={skill.id}
+                                        {...skill}
+                                        isActive={selectedSkill?.id === skill.id}
+                                        onClick={() => setSelectedSkill(skill)}
+                                        delay={index * 0.05}
+                                        icon={skill.icon as any}
+                                        xSpring={springs[originalIndex].x}
+                                        ySpring={springs[originalIndex].y}
+                                    />
+                                );
+                            })}
                         </AnimatePresence>
 
                         {/* Skill Detail Card (Floating) */}
