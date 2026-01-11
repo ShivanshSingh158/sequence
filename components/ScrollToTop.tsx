@@ -1,43 +1,24 @@
 'use client';
 
-import { Suspense, useEffect, useRef } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
-
-function ScrollToTopContent() {
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const prevPathname = useRef(pathname);
-
-    useEffect(() => {
-        // Did pathname actually change?
-        if (prevPathname.current !== pathname) {
-            prevPathname.current = pathname; // Update ref
-
-            // On REAL page navigation, scroll to top
-            if (!window.location.hash) {
-                window.scrollTo(0, 0);
-            }
-        }
-
-        // Hash clearing logic (Keep this, just don't let it trigger the scroll above)
-        if (window.location.hash) {
-            const timeout = setTimeout(() => {
-                // This replaceState might trigger a re-render, but since 
-                // pathname === prevPathname, the block above won't run.
-                window.history.replaceState(null, '', window.location.pathname + window.location.search);
-            }, 1000); // 1s delay to safeguard
-
-            return () => clearTimeout(timeout);
-        }
-    }, [pathname, searchParams]);
-
-    return null;
-}
+import { useLayoutEffect } from 'react';
 
 export default function ScrollToTop() {
-    return (
-        <Suspense fallback={null}>
-            <ScrollToTopContent />
-        </Suspense>
-    );
+    useLayoutEffect(() => {
+        // 1. Set scroll restoration to manual immediately
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // 2. Force scroll to top
+        window.scrollTo(0, 0);
+
+        // 3. Backup: Attempt again after a short delay to handle any hydration layout shifts
+        const timeout = setTimeout(() => {
+            window.scrollTo(0, 0);
+        }, 50);
+
+        return () => clearTimeout(timeout);
+    }, []);
+
+    return null;
 }
