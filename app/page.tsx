@@ -1,5 +1,6 @@
 import ScrollyCanvas from "@/components/ScrollyCanvas";
 import AgencyIntro from "@/components/AgencyIntro";
+import SkillsConstellation from "@/components/SkillsConstellation";
 import Ecosystem from "@/components/Ecosystem";
 import Timeline from "@/components/Timeline";
 import Process from "@/components/Process";
@@ -10,6 +11,7 @@ export default function Home() {
     <main className="w-full">
       <ScrollyCanvas />
       <AgencyIntro />
+      <SkillsConstellation />
       <Ecosystem />
       <Timeline />
       <Process />

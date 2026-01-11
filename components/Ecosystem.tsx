@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import TiltCard from './TiltCard';
 
 interface Product {
     title: string;
@@ -85,24 +86,13 @@ export default function Ecosystem() {
     );
 }
 
+// ... (existing code, note: we replace Flashcard component implementation)
+
 function Flashcard({ product, index }: { product: Product, index: number }) {
     const [isFlipped, setIsFlipped] = useState(false);
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        setMousePosition({
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top,
-        });
-    };
 
     return (
-        <div
-            className="group h-[420px] w-full [perspective:1000px] cursor-pointer relative"
-            onClick={() => setIsFlipped(!isFlipped)}
-            onMouseMove={handleMouseMove}
-        >
+        <TiltCard className="h-[420px] w-full cursor-pointer relative" onClick={() => setIsFlipped(!isFlipped)}>
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -110,18 +100,10 @@ function Flashcard({ product, index }: { product: Product, index: number }) {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="h-full w-full"
             >
-                <div className={`relative h-full w-full transition-all duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
+                <div className={`relative h-full w-full transition-all duration-700 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
 
                     {/* --- FRONT FACE (The Pin) --- */}
-                    <div className="absolute inset-0 h-full w-full bg-zinc-900/40 backdrop-blur-sm border border-white/5 rounded-3xl [backface-visibility:hidden] flex flex-col items-center justify-center shadow-xl overflow-hidden">
-
-                        {/* Spotlight Effect */}
-                        <div
-                            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                            style={{
-                                background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.1), transparent 40%)`
-                            }}
-                        />
+                    <div className="absolute inset-0 h-full w-full bg-zinc-900/40 backdrop-blur-sm border border-white/5 rounded-3xl [backface-visibility:hidden] flex flex-col items-center justify-center shadow-xl overflow-hidden group">
 
                         {/* Floating Logo */}
                         <div className="relative w-32 h-32 mb-8 transition-transform duration-500 group-hover:scale-110">
@@ -141,7 +123,7 @@ function Flashcard({ product, index }: { product: Product, index: number }) {
                         </h3>
 
                         <div className="absolute bottom-8 text-white/20 text-xs font-mono uppercase tracking-[0.2em]">
-                            Hover / Click to Reveal
+                            Hover / Click to Flip
                         </div>
                     </div>
 
@@ -162,6 +144,6 @@ function Flashcard({ product, index }: { product: Product, index: number }) {
                     </div>
                 </div>
             </motion.div>
-        </div>
+        </TiltCard>
     );
 }

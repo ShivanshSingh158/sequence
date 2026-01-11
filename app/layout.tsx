@@ -10,6 +10,7 @@ import Dock from "@/components/Dock";
 import SmoothScroll from "@/components/SmoothScroll";
 import PullToRefresh from "@/components/PullToRefresh";
 import ThemeToggle from "@/components/ThemeToggle";
+import ScrollProgressRing from "@/components/ScrollProgressRing";
 import { LoadingProvider } from "@/context/LoadingContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 
@@ -61,6 +62,7 @@ export default function RootLayout({
             <MagneticCursor />
             <SoundControl />
             <ThemeToggle />
+            <ScrollProgressRing />
             <GrainOverlay />
             <Preloader />
             <Dock />
