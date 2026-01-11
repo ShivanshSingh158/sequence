@@ -4,6 +4,9 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Overlay from './Overlay';
 
+// Global flag to track if animation has played in this session
+let hasPlayedSession = false;
+
 export default function ScrollyCanvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -71,7 +74,8 @@ export default function ScrollyCanvas() {
     const frameIndexRef = useRef(0);
     const requestRef = useRef<number>(0);
     const lastTimeRef = useRef<number>(0);
-    const fpsInterval = 1000 / 30; // 30fps locked
+    // Target duration: ~4.5s for 120 frames (120 / 4.5 ≈ 26.66 FPS)
+    const fpsInterval = 1000 / 26.5;
 
     // Draw Frame
     const renderFrame = useCallback((index: number) => {
@@ -101,6 +105,9 @@ export default function ScrollyCanvas() {
             if (frameIndexRef.current < images.length - 1) {
                 frameIndexRef.current += 1;
                 renderFrame(frameIndexRef.current);
+            } else {
+                // Animation Finished
+                hasPlayedSession = true;
             }
             lastTimeRef.current = time - (delta % fpsInterval);
         }
@@ -110,27 +117,34 @@ export default function ScrollyCanvas() {
         }
     }, [images.length, fpsInterval, renderFrame]);
 
-    // Start Animation on Load
+    // Start Animation & Handle Resize
     useEffect(() => {
         if (!isLoaded || images.length === 0) return;
 
         setupCanvas();
-        window.addEventListener('resize', setupCanvas);
 
+        // Handle Resize - Repaint current frame
+        const handleResize = () => {
+            setupCanvas();
+            renderFrame(frameIndexRef.current);
+        };
+        window.addEventListener('resize', handleResize);
+
+        // Allways Play Animation (Visuals Replay)
         lastTimeRef.current = performance.now();
         requestRef.current = requestAnimationFrame(animate);
 
         return () => {
-            window.removeEventListener('resize', setupCanvas);
+            window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(requestRef.current);
         };
-    }, [isLoaded, images, setupCanvas, animate]);
+    }, [isLoaded, images, setupCanvas, animate, renderFrame]);
 
     return (
-        <div ref={containerRef} className="h-[400vh] relative bg-[#121212]">
-            {/* Sticky container for smooth pinning */}
+        <div ref={containerRef} className="h-screen relative bg-[#121212]">
+            {/* Standard full-screen container */}
             <motion.div
-                className="sticky top-0 h-screen w-full overflow-hidden"
+                className="h-full w-full overflow-hidden"
             >
                 <canvas
                     ref={canvasRef}
@@ -138,7 +152,7 @@ export default function ScrollyCanvas() {
                     style={{ width: '100%', height: '100%' }}
                 />
 
-                <Overlay />
+                <Overlay forceFinalState={hasPlayedSession} />
 
                 {!isLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black z-50">

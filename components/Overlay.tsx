@@ -4,27 +4,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useLoading } from '@/context/LoadingContext';
 
-export default function Overlay() {
+export default function Overlay({ forceFinalState = false }: { forceFinalState?: boolean }) {
     const { isLoading } = useLoading();
-    const [activeIndex, setActiveIndex] = useState(0);
+    // If forced, start at 2 (Final), else 0
+    const [activeIndex, setActiveIndex] = useState(forceFinalState ? 2 : 0);
 
     useEffect(() => {
-        if (isLoading) return;
+        if (isLoading || forceFinalState) return;
 
         // 0s: Start
         setActiveIndex(0);
 
-        // 1.5s: Bridge
-        const timer1 = setTimeout(() => setActiveIndex(1), 1500);
+        // 1.1s: Bridge
+        const timer1 = setTimeout(() => setActiveIndex(1), 1100);
 
-        // 3.5s: ShivansH (Final - Syncs with Frame 105/120)
-        const timer2 = setTimeout(() => setActiveIndex(2), 3500);
+        // 3.1s: ShivansH
+        const timer2 = setTimeout(() => setActiveIndex(2), 3100);
 
         return () => {
             clearTimeout(timer1);
             clearTimeout(timer2);
         };
-    }, [isLoading]);
+    }, [isLoading, forceFinalState]);
 
     return (
         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
